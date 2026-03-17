@@ -155,3 +155,61 @@ pub async fn get_playback_state(state: State<'_, MpvState>) -> Result<PlaybackSt
     let mpv = state.get()?;
     Ok(PlaybackService::get_state(mpv))
 }
+
+#[tauri::command]
+pub async fn screenshot(state: State<'_, MpvState>) -> Result<String, AppError> {
+    let dir = dirs::picture_dir()
+        .unwrap_or_else(|| dirs::home_dir().unwrap_or_default())
+        .join("Hayamiru");
+    std::fs::create_dir_all(&dir)?;
+    let name = chrono::Local::now().format("hayamiru_%Y%m%d_%H%M%S.png");
+    let path = dir.join(name.to_string());
+    let path_str = path.to_string_lossy().to_string();
+    PlaybackService::screenshot(state.get()?, &path_str)?;
+    Ok(path_str)
+}
+
+#[tauri::command]
+pub async fn frame_step(state: State<'_, MpvState>) -> Result<(), AppError> {
+    PlaybackService::frame_step(state.get()?)?;
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn frame_back_step(state: State<'_, MpvState>) -> Result<(), AppError> {
+    PlaybackService::frame_back_step(state.get()?)?;
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn cycle_aspect_ratio(
+    state: State<'_, MpvState>,
+) -> Result<String, AppError> {
+    Ok(PlaybackService::cycle_aspect_ratio(state.get()?)?)
+}
+
+#[tauri::command]
+pub async fn toggle_ab_loop(
+    state: State<'_, MpvState>,
+) -> Result<crate::services::playback::AbLoopState, AppError> {
+    Ok(PlaybackService::set_ab_loop(state.get()?, "toggle")?)
+}
+
+#[tauri::command]
+pub async fn get_chapters(
+    state: State<'_, MpvState>,
+) -> Result<Vec<crate::services::playback::Chapter>, AppError> {
+    Ok(PlaybackService::get_chapters(state.get()?))
+}
+
+#[tauri::command]
+pub async fn seek_chapter(index: i64, state: State<'_, MpvState>) -> Result<(), AppError> {
+    PlaybackService::seek_chapter(state.get()?, index)?;
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn open_url(url: String, state: State<'_, MpvState>) -> Result<(), AppError> {
+    PlaybackService::open_url(state.get()?, &url)?;
+    Ok(())
+}

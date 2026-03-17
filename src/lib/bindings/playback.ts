@@ -20,3 +20,25 @@ export interface PlaybackState {
 }
 
 export const getPlaybackState = () => invoke<PlaybackState>("get_playback_state");
+
+export const screenshot = () => invoke<string>("screenshot");
+export const frameStep = () => invoke<void>("frame_step");
+export const frameBackStep = () => invoke<void>("frame_back_step");
+export const cycleAspectRatio = () => invoke<string>("cycle_aspect_ratio");
+export const openUrl = (url: string) => invoke<void>("open_url", { url });
+
+export interface AbLoopState {
+  a: number;
+  b: number;
+  active: boolean;
+}
+export const toggleAbLoop = () => invoke<AbLoopState>("toggle_ab_loop");
+
+export interface Chapter {
+  index: number;
+  title: string;
+  time: number;
+  current: boolean;
+}
+export const getChapters = () => invoke<Chapter[]>("get_chapters");
+export const seekChapter = (index: number) => invoke<void>("seek_chapter", { index });

@@ -3,9 +3,12 @@
   import { open } from "@tauri-apps/plugin-dialog";
   import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
   import { player } from "$lib/stores/player.svelte";
-  import { initPlayer, openFile, togglePause, seekRelative, setVolume, getPlaybackState } from "$lib/bindings/playback";
+  import {
+    initPlayer, openFile, togglePause, seekRelative, setVolume, getPlaybackState,
+    screenshot, frameStep, frameBackStep, cycleAspectRatio, toggleAbLoop,
+  } from "$lib/bindings/playback";
   import { toggleFullscreen } from "$lib/bindings/window";
-  import { toggleSubtitles, getTracks, selectSubtitle, selectAudioTrack } from "$lib/bindings/tracks";
+  import { getTracks, selectSubtitle, selectAudioTrack } from "$lib/bindings/tracks";
   import { playlistNext, playlistPrev } from "$lib/bindings/playlist";
   import TitleBar from "$lib/components/TitleBar.svelte";
   import VideoControls from "$lib/components/VideoControls.svelte";
@@ -100,6 +103,11 @@
       case "a": case "A": cycleTrack("audio"); break;
       case "n": case "N": playlistNext().catch(() => {}); break;
       case "p": case "P": playlistPrev().catch(() => {}); break;
+      case "s": case "S": screenshot().catch(() => {}); break;
+      case ".": frameStep().catch(() => {}); break;
+      case ",": frameBackStep().catch(() => {}); break;
+      case "r": case "R": cycleAspectRatio().catch(() => {}); break;
+      case "l": case "L": toggleAbLoop().catch(() => {}); break;
       case "Escape": if (player.fullscreen) toggleFullscreen(); break;
     }
 
