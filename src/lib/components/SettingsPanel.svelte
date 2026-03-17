@@ -117,7 +117,7 @@
 
       <!-- Content -->
       <!-- svelte-ignore a11y_no_static_element_interactions -->
-      <div class="flex-1 overflow-y-auto p-4 space-y-4" onclick={() => openDrop = null}
+      <div class="flex-1 overflow-y-auto p-4 space-y-4" onclick={() => openDrop = null}>
         {#if tab === "general"}
           <div class="s-group">
             <div class="s-row">
