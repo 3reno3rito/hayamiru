@@ -22,10 +22,11 @@
   let ctxX = $state(0);
   let ctxY = $state(0);
   let infoPanel = $state(false);
+  let settingsOpen = $state(false);
 
   function openPanel(name: string) {
     if (name === "info") infoPanel = true;
-    // "video" and "eq" are handled by the Settings panel in VideoControls
+    if (name === "settings") settingsOpen = true;
   }
 
   function handleMouseMove(e: MouseEvent) {
@@ -206,8 +207,8 @@
     </div>
   {/if}
 
-  <TitleBar visible={player.controlsVisible} onopen={handleOpenFile} />
-  <VideoControls visible={player.controlsVisible} />
+  <TitleBar visible={player.controlsVisible} menuOpen={ctxShow} onmenu={(mx, my) => { if (mx < 0) { ctxShow = false; } else { ctxX = mx; ctxY = my; ctxShow = true; } }} />
+  <VideoControls visible={player.controlsVisible} bind:settingsOpen />
 
   <ContextMenu
     show={ctxShow}

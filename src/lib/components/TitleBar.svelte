@@ -2,17 +2,16 @@
   import { minimizeWindow, maximizeWindow, closeWindow } from "$lib/bindings/window";
   import { player } from "$lib/stores/player.svelte";
 
-  let { visible = true, onopen }: { visible?: boolean; onopen?: () => void } = $props();
+  let { visible = true, menuOpen = false, onmenu }: { visible?: boolean; menuOpen?: boolean; onmenu?: (x: number, y: number) => void } = $props();
 </script>
 
 {#if visible}
   <div
     class="fixed top-0 left-0 right-0 z-50 flex items-center h-9 px-3 drag-region controls-overlay bg-gradient-to-b from-black/70 to-transparent"
   >
-    <button onclick={() => onopen?.()} class="ctrl-btn w-7 h-7 no-drag mr-2" title="Open file (Ctrl+O)">
-      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-          d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+    <button onclick={(e) => { e.stopPropagation(); if (menuOpen) { onmenu?.(-1, -1); } else { const r = (e.currentTarget as HTMLElement).getBoundingClientRect(); onmenu?.(r.left, r.bottom + 4); } }} class="ctrl-btn w-7 h-7 no-drag mr-2" title="Menu">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+        <path stroke-linecap="round" d="M4 6h16M4 12h16M4 18h16" />
       </svg>
     </button>
 

@@ -77,6 +77,14 @@
   function resetEq() { eqBands = [0,0,0,0,0]; resetAudioEqualizer(); }
   function setPreset(name: string) { eqBands = [...eqPresets[name]]; applyEq(); }
 
+  function resetAll() {
+    volume = 100; speed = 1.0; rememberPosition = true; autoPlay = true; language = "en";
+    resetVideo();
+    normEnabled = false; resetEq(); setAudioNormalization(false);
+    subFont = "Segoe UI"; subSize = 55; subColor = "#FFFFFF";
+    subBorderColor = "#000000"; subBorderSize = 3; subPosition = 100;
+  }
+
   function close() { visible = false; }
 </script>
 
@@ -108,17 +116,18 @@
       </div>
 
       <!-- Content -->
-      <div class="flex-1 overflow-y-auto p-4 space-y-4">
+      <!-- svelte-ignore a11y_no_static_element_interactions -->
+      <div class="flex-1 overflow-y-auto p-4 space-y-4" onclick={() => openDrop = null}
         {#if tab === "general"}
           <div class="s-group">
             <div class="s-row">
               <span>Language</span>
               <div class="relative">
-                <button class="s-drop-btn" onclick={() => toggleDrop("lang")}>{languages[language]} <span class="opacity-40">▾</span></button>
+                <button class="s-drop-btn {openDrop === 'lang' ? 'text-blue-400' : ''}" onclick={() => toggleDrop("lang")}>{languages[language]} <svg class="w-4 h-4 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></button>
                 {#if openDrop === "lang"}
                   <div class="s-drop-list">
                     {#each Object.entries(languages) as [code, name]}
-                      <button class="s-drop-item {language === code ? 'text-blue-400' : ''}" onclick={() => { language = code; openDrop = null; }}>{name}</button>
+                      <button class="s-drop-item {language === code ? 'text-blue-400' : 'text-white/80'}" onclick={() => { language = code; openDrop = null; }}>{name}</button>
                     {/each}
                   </div>
                 {/if}
@@ -136,11 +145,11 @@
             <div class="s-row">
               <span>Default Speed</span>
               <div class="relative">
-                <button class="s-drop-btn" onclick={() => toggleDrop("speed")}>{speed}x <span class="opacity-40">▾</span></button>
+                <button class="s-drop-btn {openDrop === 'speed' ? 'text-blue-400' : ''}" onclick={() => toggleDrop("speed")}>{speed}x <svg class="w-4 h-4 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></button>
                 {#if openDrop === "speed"}
                   <div class="s-drop-list">
                     {#each speeds as s}
-                      <button class="s-drop-item {speed === s ? 'text-blue-400' : ''}" onclick={() => { speed = s; openDrop = null; }}>{s}x</button>
+                      <button class="s-drop-item {speed === s ? 'text-blue-400' : 'text-white/80'}" onclick={() => { speed = s; openDrop = null; }}>{s}x</button>
                     {/each}
                   </div>
                 {/if}
@@ -210,11 +219,11 @@
             <div class="s-row">
               <span>Font</span>
               <div class="relative">
-                <button class="s-drop-btn" onclick={() => toggleDrop("font")}>{subFont} <span class="opacity-40">▾</span></button>
+                <button class="s-drop-btn {openDrop === 'font' ? 'text-blue-400' : ''}" onclick={() => toggleDrop("font")}>{subFont} <svg class="w-4 h-4 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></button>
                 {#if openDrop === "font"}
                   <div class="s-drop-list">
                     {#each fonts as f}
-                      <button class="s-drop-item {subFont === f ? 'text-blue-400' : ''}" style="font-family:'{f}'" onclick={() => { subFont = f; openDrop = null; }}>{f}</button>
+                      <button class="s-drop-item {subFont === f ? 'text-blue-400' : 'text-white/80'}" style="font-family:'{f}'" onclick={() => { subFont = f; openDrop = null; }}>{f}</button>
                     {/each}
                   </div>
                 {/if}
@@ -255,7 +264,9 @@
     </div>
 
     <!-- Footer -->
-    <div class="flex items-center justify-end px-4 py-2 border-t border-white/[0.08]">
+    <div class="flex items-center px-4 py-2 border-t border-white/[0.08]">
+      <button class="text-[11px] text-white/30 hover:text-white/60" onclick={resetAll}>Restore Defaults</button>
+      <div class="flex-1"></div>
       <span class="text-[11px] text-white/20">Hayamiru v0.1.0</span>
     </div>
   </div>
@@ -299,7 +310,7 @@
   }
   .s-drop-item {
     width: 100%; text-align: left; padding: 6px 12px; font-size: 13px;
-    color: rgba(255,255,255,0.8); background: none; border: none; cursor: pointer;
+    background: none; border: none; cursor: pointer;
   }
   .s-drop-item:hover { background: rgba(255,255,255,0.1); }
   .s-color {

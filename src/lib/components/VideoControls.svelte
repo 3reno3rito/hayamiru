@@ -10,12 +10,13 @@
   import PlaylistPanel from "./PlaylistPanel.svelte";
   import SettingsPanel from "./SettingsPanel.svelte";
 
-  let { visible = true }: { visible?: boolean } = $props();
+  let { visible = true, settingsOpen = $bindable(false) }: { visible?: boolean; settingsOpen?: boolean } = $props();
 
   let subPanelVisible = $state(false);
   let audioPanelVisible = $state(false);
   let playlistPanelVisible = $state(false);
   let settingsPanelVisible = $state(false);
+  $effect(() => { if (settingsOpen) { closeAll(); settingsPanelVisible = true; settingsOpen = false; } });
   let speedDropOpen = $state(false);
   let speedBtnEl = $state<HTMLButtonElement | null>(null);
 

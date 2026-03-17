@@ -141,6 +141,7 @@
       <button class="ctx-item" onclick={handleScreenshot}>Screenshot<span class="ctx-key">S</span></button>
       <div class="ctx-sep"></div>
       <button class="ctx-item" onclick={() => { onclose(); onpanel("info"); }}>Media Info<span class="ctx-key">I</span></button>
+      <button class="ctx-item" onclick={() => { onclose(); onpanel("settings"); }}>Settings</button>
       <div class="ctx-sep"></div>
       <button class="ctx-item" onclick={handleAlwaysOnTop}>
         {alwaysOnTop ? "✓ " : "\u00A0 "}Always on Top
