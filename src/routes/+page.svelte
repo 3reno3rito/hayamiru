@@ -24,29 +24,27 @@
   $effect(() => {
     const cleanups: Array<Promise<() => void> | (() => void)> = [];
 
-    initPlayer()
-      .then(() => {
-        // Event-driven state updates (primary)
-        cleanups.push(listen<number>("mpv:time-pos", (e) => { player.currentTime = e.payload; }));
-        cleanups.push(listen<number>("mpv:duration", (e) => { player.duration = e.payload; }));
-        cleanups.push(listen<boolean>("mpv:pause", (e) => { player.playing = !e.payload; }));
-        cleanups.push(listen<number>("mpv:volume", (e) => { player.volume = e.payload; }));
-        cleanups.push(listen<string>("mpv:media-title", (e) => { player.title = e.payload; }));
-        cleanups.push(listen<void>("mpv:end-file", () => { player.playing = false; }));
+    initPlayer().catch(() => {});
 
-        // Polling fallback — catches anything events miss
-        const poll = setInterval(() => {
-          getPlaybackState().then((s) => {
-            player.currentTime = s.time_pos;
-            player.duration = s.duration;
-            player.playing = !s.paused;
-            player.title = s.title;
-            player.volume = s.volume;
-          }).catch(() => {});
-        }, 1000);
-        cleanups.push(() => clearInterval(poll));
-      })
-      .catch((err) => console.error("Failed to init mpv:", err));
+    // Event-driven state updates
+    cleanups.push(listen<number>("mpv:time-pos", (e) => { player.currentTime = e.payload; }));
+    cleanups.push(listen<number>("mpv:duration", (e) => { player.duration = e.payload; }));
+    cleanups.push(listen<boolean>("mpv:pause", (e) => { player.playing = !e.payload; }));
+    cleanups.push(listen<number>("mpv:volume", (e) => { player.volume = e.payload; }));
+    cleanups.push(listen<string>("mpv:media-title", (e) => { player.title = e.payload; }));
+    cleanups.push(listen<void>("mpv:end-file", () => { player.playing = false; }));
+
+    // Polling fallback
+    const poll = setInterval(() => {
+      getPlaybackState().then((s) => {
+        player.currentTime = s.time_pos;
+        player.duration = s.duration;
+        player.playing = !s.paused;
+        player.title = s.title;
+        player.volume = s.volume;
+      }).catch(() => {});
+    }, 1000);
+    cleanups.push(() => clearInterval(poll));
 
     // Drag & drop
     getCurrentWebviewWindow().onDragDropEvent((event) => {

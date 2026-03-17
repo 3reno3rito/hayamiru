@@ -12,6 +12,11 @@ pub async fn init_player(
     app: tauri::AppHandle,
     mpv_state: State<'_, MpvState>,
 ) -> Result<(), AppError> {
+    // Skip if already initialized (e.g. HMR re-render)
+    if mpv_state.is_initialized() {
+        return Ok(());
+    }
+
     let window = app
         .get_webview_window("main")
         .ok_or_else(|| AppError::FileNotFound("main window not found".into()))?;
@@ -93,6 +98,8 @@ pub async fn seek_absolute(seconds: f64, state: State<'_, MpvState>) -> Result<(
     PlaybackService::seek_absolute(state.get()?, seconds)?;
     Ok(())
 }
+
+
 
 #[tauri::command]
 pub async fn set_volume(volume: f64, state: State<'_, MpvState>) -> Result<(), AppError> {

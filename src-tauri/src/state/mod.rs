@@ -12,11 +12,15 @@ impl MpvState {
         Self(OnceLock::new())
     }
 
-    /// Initialize the player. Fails if already initialized.
+    /// Initialize the player. No-op if already initialized.
     pub fn init(&self, player: MpvPlayer) -> Result<(), MpvError> {
-        self.0
-            .set(Arc::new(player))
-            .map_err(|_| MpvError::api(-1, "mpv already initialized"))
+        let _ = self.0.set(Arc::new(player));
+        Ok(())
+    }
+
+    /// Returns true if the player is already initialized.
+    pub fn is_initialized(&self) -> bool {
+        self.0.get().is_some()
     }
 
     /// Get a reference to the player. Fails if not yet initialized.

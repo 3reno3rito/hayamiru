@@ -9,7 +9,9 @@
     if (!trackEl || player.duration <= 0) return;
     const rect = trackEl.getBoundingClientRect();
     const fraction = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-    seekAbsolute(fraction * player.duration);
+    const time = fraction * player.duration;
+    player.currentTime = time;
+    seekAbsolute(time);
   }
 
   function onMouseDown(e: MouseEvent) {
@@ -27,7 +29,9 @@
 <svelte:window onmouseup={onMouseUp} onmousemove={onMouseMove} />
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
-<div class="seek-track w-full" bind:this={trackEl} onmousedown={onMouseDown}>
-  <div class="seek-progress" style="width: {player.progress}%"></div>
-  <div class="seek-thumb" style="left: {player.progress}%"></div>
+<div class="w-full cursor-pointer py-2" bind:this={trackEl} onmousedown={onMouseDown}>
+  <div class="seek-track">
+    <div class="seek-progress" style="width: {player.progress}%"></div>
+    <div class="seek-thumb" style="left: {player.progress}%"></div>
+  </div>
 </div>
