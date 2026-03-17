@@ -1,9 +1,19 @@
 <script lang="ts">
   import { player } from "$lib/stores/player.svelte";
-  import { seekAbsolute } from "$lib/bindings/playback";
+  import { seekAbsolute, getChapters, type Chapter } from "$lib/bindings/playback";
 
   let trackEl: HTMLDivElement;
   let seeking = $state(false);
+  let chapters = $state<Chapter[]>([]);
+
+  // Refresh chapters when duration changes (new file loaded)
+  let lastDuration = 0;
+  $effect(() => {
+    if (player.duration > 0 && player.duration !== lastDuration) {
+      lastDuration = player.duration;
+      getChapters().then((c) => { chapters = c; }).catch(() => { chapters = []; });
+    }
+  });
 
   function handleSeek(e: MouseEvent) {
     if (!trackEl || player.duration <= 0) return;
@@ -32,6 +42,15 @@
 <div class="w-full cursor-pointer py-2" bind:this={trackEl} onmousedown={onMouseDown}>
   <div class="seek-track">
     <div class="seek-progress" style="width: {player.progress}%"></div>
+    {#each chapters as ch}
+      {#if player.duration > 0 && ch.time > 0}
+        <div
+          class="absolute top-0 h-full w-[2px] bg-white/40"
+          style="left: {(ch.time / player.duration) * 100}%"
+          title={ch.title}
+        ></div>
+      {/if}
+    {/each}
     <div class="seek-thumb" style="left: {player.progress}%"></div>
   </div>
 </div>

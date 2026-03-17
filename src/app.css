@@ -66,13 +66,14 @@ html, body {
 }
 .seek-track:hover .seek-thumb { opacity: 1; }
 
-.controls-overlay { transition: opacity 0.3s ease; }
+.controls-overlay { transition: none; }
 .drag-region { -webkit-app-region: drag; app-region: drag; }
 .no-drag { -webkit-app-region: no-drag; app-region: no-drag; }
 
-/* Hide overlays during fullscreen transition */
-.fs-transition .controls-overlay {
-  visibility: hidden !important;
-  opacity: 0 !important;
-  transition: none !important;
-}
+
+/* Custom scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.25); }
+::-webkit-scrollbar-corner { background: transparent; }

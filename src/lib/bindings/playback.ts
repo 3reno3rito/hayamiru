@@ -24,7 +24,6 @@ export const getPlaybackState = () => invoke<PlaybackState>("get_playback_state"
 export const screenshot = () => invoke<string>("screenshot");
 export const frameStep = () => invoke<void>("frame_step");
 export const frameBackStep = () => invoke<void>("frame_back_step");
-export const cycleAspectRatio = () => invoke<string>("cycle_aspect_ratio");
 export const openUrl = (url: string) => invoke<void>("open_url", { url });
 
 export interface AbLoopState {

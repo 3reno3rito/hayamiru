@@ -34,7 +34,6 @@ pub fn run() {
             commands::playback::screenshot,
             commands::playback::frame_step,
             commands::playback::frame_back_step,
-            commands::playback::cycle_aspect_ratio,
             commands::playback::toggle_ab_loop,
             commands::playback::get_chapters,
             commands::playback::seek_chapter,
@@ -60,6 +59,23 @@ pub fn run() {
             commands::settings::save_settings,
             commands::settings::get_recent_files,
             commands::settings::clear_recent_files,
+            // Video
+            commands::video::set_brightness,
+            commands::video::set_contrast,
+            commands::video::set_saturation,
+            commands::video::toggle_deinterlace,
+            commands::video::set_video_zoom,
+            commands::video::set_video_pan,
+            commands::video::get_video_zoom_pan,
+            commands::video::reset_video_zoom_pan,
+            commands::video::set_aspect_ratio,
+            commands::video::get_aspect_ratio,
+            // Audio FX
+            commands::audio_fx::set_audio_normalization,
+            commands::audio_fx::set_audio_equalizer,
+            commands::audio_fx::reset_audio_equalizer,
+            // Media Info
+            commands::media_info::get_media_info,
             // Window
             commands::window::toggle_fullscreen,
             commands::window::set_always_on_top,

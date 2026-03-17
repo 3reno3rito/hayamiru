@@ -4,27 +4,39 @@
   import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
   import { player } from "$lib/stores/player.svelte";
   import {
-    initPlayer, openFile, togglePause, seekRelative, setVolume, getPlaybackState,
-    screenshot, frameStep, frameBackStep, cycleAspectRatio, toggleAbLoop,
+    initPlayer, openFile, togglePause, seekRelative, setVolume, setSpeed, getPlaybackState,
+    screenshot, frameStep, frameBackStep, toggleAbLoop,
   } from "$lib/bindings/playback";
+  import { setAspectRatio, getAspectRatio } from "$lib/bindings/video";
   import { toggleFullscreen } from "$lib/bindings/window";
   import { getTracks, selectSubtitle, selectAudioTrack } from "$lib/bindings/tracks";
   import { playlistNext, playlistPrev } from "$lib/bindings/playlist";
   import TitleBar from "$lib/components/TitleBar.svelte";
   import VideoControls from "$lib/components/VideoControls.svelte";
+  import ContextMenu from "$lib/components/ContextMenu.svelte";
+  import MediaInfoPanel from "$lib/components/MediaInfoPanel.svelte";
 
-  let controlsVisible = $state(true);
-  let hideTimer: ReturnType<typeof setTimeout> | null = null;
   let fileLoaded = $state(false);
   let dragOver = $state(false);
+  let ctxShow = $state(false);
+  let ctxX = $state(0);
+  let ctxY = $state(0);
+  let infoPanel = $state(false);
 
-  function showControls() {
-    controlsVisible = true;
-    if (hideTimer) clearTimeout(hideTimer);
-    if (player.playing) {
-      hideTimer = setTimeout(() => { controlsVisible = false; }, 3000);
-    }
+  function openPanel(name: string) {
+    if (name === "info") infoPanel = true;
+    // "video" and "eq" are handled by the Settings panel in VideoControls
   }
+
+  function handleMouseMove(e: MouseEvent) {
+    if (!player.fullscreen) { player.controlsVisible = true; return; }
+    if (document.querySelector("[data-panel]")) { player.controlsVisible = true; return; }
+    player.controlsVisible = e.clientY <= 50 || e.clientY >= window.innerHeight - 80;
+  }
+
+  $effect(() => {
+    if (!player.fullscreen) player.controlsVisible = true;
+  });
 
   $effect(() => {
     const cleanups: Array<Promise<() => void> | (() => void)> = [];
@@ -75,6 +87,16 @@
     };
   });
 
+  const ratioList = ["-1", "16:9", "4:3", "21:9", "2.35:1"];
+  async function cycleRatio() {
+    try {
+      const current = await getAspectRatio();
+      const idx = ratioList.indexOf(current);
+      const next = ratioList[(idx + 1) % ratioList.length];
+      await setAspectRatio(next);
+    } catch {}
+  }
+
   async function cycleTrack(type: "sub" | "audio") {
     try {
       const tracks = await getTracks();
@@ -106,9 +128,15 @@
       case "s": case "S": screenshot().catch(() => {}); break;
       case ".": frameStep().catch(() => {}); break;
       case ",": frameBackStep().catch(() => {}); break;
-      case "r": case "R": cycleAspectRatio().catch(() => {}); break;
+      case "r": case "R": cycleRatio(); break;
       case "l": case "L": toggleAbLoop().catch(() => {}); break;
-      case "Escape": if (player.fullscreen) toggleFullscreen(); break;
+      case "+": case "=": player.speed = Math.min(4, +(player.speed + 0.25).toFixed(2)); setSpeed(player.speed); break;
+      case "-": player.speed = Math.max(0.25, +(player.speed - 0.25).toFixed(2)); setSpeed(player.speed); break;
+      case "i": case "I": openPanel("info"); break;
+      case "Escape":
+        if (infoPanel) { infoPanel = false; break; }
+        if (player.fullscreen) toggleFullscreen();
+        break;
     }
 
     if (e.ctrlKey && e.key === "o") {
@@ -132,6 +160,13 @@
     }
   }
 
+  function handleContextMenu(e: MouseEvent) {
+    e.preventDefault();
+    ctxX = e.clientX;
+    ctxY = e.clientY;
+    ctxShow = true;
+  }
+
   function handleDoubleClick(e: MouseEvent) {
     const el = e.target as HTMLElement;
     // Only toggle fullscreen when double-clicking the video area itself
@@ -145,9 +180,10 @@
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <div
   class="w-screen h-screen relative overflow-hidden"
-  style="background: {player.duration > 0 ? 'transparent' : 'black'}; cursor: {controlsVisible ? 'default' : 'none'};"
-  onmousemove={showControls}
+  style="background: {player.duration > 0 ? 'transparent' : 'black'}; cursor: {!player.fullscreen || player.controlsVisible ? 'default' : 'none'};"
+  onmousemove={handleMouseMove}
   ondblclick={handleDoubleClick}
+  oncontextmenu={handleContextMenu}
 >
   {#if dragOver}
     <div class="absolute inset-0 z-[90] flex items-center justify-center bg-black/60 border-2 border-dashed border-white/30 pointer-events-none">
@@ -170,6 +206,17 @@
     </div>
   {/if}
 
-  <TitleBar visible={controlsVisible} onopen={handleOpenFile} />
-  <VideoControls visible={controlsVisible} />
+  <TitleBar visible={player.controlsVisible} onopen={handleOpenFile} />
+  <VideoControls visible={player.controlsVisible} />
+
+  <ContextMenu
+    show={ctxShow}
+    x={ctxX}
+    y={ctxY}
+    onclose={() => ctxShow = false}
+    onopen={handleOpenFile}
+    onpanel={openPanel}
+  />
+
+  <MediaInfoPanel bind:visible={infoPanel} />
 </div>

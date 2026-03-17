@@ -182,13 +182,6 @@ pub async fn frame_back_step(state: State<'_, MpvState>) -> Result<(), AppError>
 }
 
 #[tauri::command]
-pub async fn cycle_aspect_ratio(
-    state: State<'_, MpvState>,
-) -> Result<String, AppError> {
-    Ok(PlaybackService::cycle_aspect_ratio(state.get()?)?)
-}
-
-#[tauri::command]
 pub async fn toggle_ab_loop(
     state: State<'_, MpvState>,
 ) -> Result<crate::services::playback::AbLoopState, AppError> {

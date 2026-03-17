@@ -8,6 +8,7 @@ class PlayerStore {
   muted = $state(false);
   speed = $state(1.0);
   fullscreen = $state(false);
+  controlsVisible = $state(true);
   title = $state("");
 
   get progress(): number {

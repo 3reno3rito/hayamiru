@@ -1,11 +1,12 @@
 import { invoke } from "@tauri-apps/api/core";
+import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
+import { player } from "$lib/stores/player.svelte";
 
 export async function toggleFullscreen(): Promise<void> {
-  document.documentElement.classList.add("fs-transition");
+  player.controlsVisible = false;
+  await new Promise((r) => requestAnimationFrame(r));
   await invoke("toggle_fullscreen");
-  setTimeout(() => {
-    document.documentElement.classList.remove("fs-transition");
-  }, 200);
+  player.fullscreen = await getCurrentWebviewWindow().isFullscreen();
 }
 
 export const setAlwaysOnTop = (enabled: boolean) => invoke<void>("set_always_on_top", { enabled });

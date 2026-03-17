@@ -53,19 +53,6 @@ impl PlaybackService {
         mpv.command(&["frame-back-step"])
     }
 
-    pub fn cycle_aspect_ratio(mpv: &MpvPlayer) -> Result<String, MpvError> {
-        let current = mpv.get_property_string("video-aspect-override").unwrap_or_default();
-        let next = match current.as_str() {
-            "-1" | "" => "16:9",
-            "16:9" => "4:3",
-            "4:3" => "2.35:1",
-            "2.35:1" => "-1", // auto/original
-            _ => "-1",
-        };
-        mpv.set::<&str>("video-aspect-override", next)?;
-        Ok(if next == "-1" { "Auto".to_string() } else { next.to_string() })
-    }
-
     pub fn set_ab_loop(mpv: &MpvPlayer, point: &str) -> Result<AbLoopState, MpvError> {
         let a = mpv.get_property_string("ab-loop-a").unwrap_or_default();
         let b = mpv.get_property_string("ab-loop-b").unwrap_or_default();
