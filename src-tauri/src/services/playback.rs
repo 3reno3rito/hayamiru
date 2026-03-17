@@ -7,10 +7,6 @@ use crate::mpv::player::MpvPlayer;
 pub struct PlaybackService;
 
 impl PlaybackService {
-    pub fn load_file(mpv: &MpvPlayer, path: &str) -> Result<(), MpvError> {
-        mpv.command(&["loadfile", path])
-    }
-
     pub fn toggle_pause(mpv: &MpvPlayer) -> Result<(), MpvError> {
         mpv.command(&["cycle", "pause"])
     }
@@ -48,7 +44,15 @@ impl PlaybackService {
             time_pos: mpv.get::<f64>("time-pos").unwrap_or(0.0),
             duration: mpv.get::<f64>("duration").unwrap_or(0.0),
             paused: mpv.get::<bool>("pause").unwrap_or(true),
-            title: mpv.get_property_string("media-title").unwrap_or_default(),
+            title: {
+                // Use filename (without path) as title, fallback to media-title
+                let filename = mpv.get_property_string("filename").unwrap_or_default();
+                if filename.is_empty() {
+                    mpv.get_property_string("media-title").unwrap_or_default()
+                } else {
+                    filename
+                }
+            },
             volume: mpv.get::<f64>("volume").unwrap_or(100.0),
         }
     }

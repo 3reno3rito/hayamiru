@@ -5,7 +5,8 @@ use crate::mpv::events;
 use crate::mpv::player::MpvPlayer;
 use crate::mpv::types::*;
 use crate::services::playback::{PlaybackService, PlaybackState};
-use crate::state::MpvState;
+use crate::services::playlist::PlaylistService;
+use crate::state::{AppState, MpvState};
 
 #[tauri::command]
 pub async fn init_player(
@@ -54,12 +55,48 @@ pub async fn init_player(
 }
 
 #[tauri::command]
-pub async fn open_file(path: String, state: State<'_, MpvState>) -> Result<(), AppError> {
+pub async fn open_file(
+    path: String,
+    mpv_state: State<'_, MpvState>,
+    app_state: State<'_, AppState>,
+) -> Result<(), AppError> {
     if !std::path::Path::new(&path).exists() {
         return Err(AppError::FileNotFound(path));
     }
-    let mpv = state.get()?;
-    PlaybackService::load_file(mpv, &path)?;
+    let mpv = mpv_state.get()?;
+
+    // Save position of current file before switching
+    app_state.with(|settings, current_file| {
+        if let Some(prev) = current_file.clone() {
+            let pos = mpv.get::<f64>("time-pos").unwrap_or(0.0);
+            let title = mpv.get_property_string("media-title").unwrap_or_default();
+            settings.touch_recent(&prev, &title, pos);
+        }
+    })?;
+
+    // Check for resume position
+    let resume = app_state.with(|settings, _| {
+        if settings.remember_position {
+            settings.get_saved_position(&path)
+        } else {
+            None
+        }
+    })?;
+
+    // Load file + populate playlist with sibling media files (resume included)
+    PlaylistService::open_with_siblings(mpv, &path, resume)?;
+
+    // Update state + recent files
+    let title = std::path::Path::new(&path)
+        .file_stem()
+        .map(|s| s.to_string_lossy().to_string())
+        .unwrap_or_default();
+    app_state.with(|settings, current_file| {
+        *current_file = Some(path.clone());
+        settings.touch_recent(&path, &title, resume.unwrap_or(0.0));
+        settings.save().ok();
+    })?;
+
     Ok(())
 }
 

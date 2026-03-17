@@ -1,0 +1,82 @@
+use serde::{Deserialize, Serialize};
+use tracing::info;
+
+use crate::error::AppError;
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct PlayerSettings {
+    pub volume: f64,
+    pub speed: f64,
+    pub remember_position: bool,
+    pub auto_play: bool,
+    #[serde(default)]
+    pub recent_files: Vec<RecentFile>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct RecentFile {
+    pub path: String,
+    pub title: String,
+    pub position: f64,
+    pub timestamp: i64,
+}
+
+impl Default for PlayerSettings {
+    fn default() -> Self {
+        Self {
+            volume: 100.0,
+            speed: 1.0,
+            remember_position: true,
+            auto_play: true,
+            recent_files: Vec::new(),
+        }
+    }
+}
+
+impl PlayerSettings {
+    fn config_path() -> std::path::PathBuf {
+        dirs::config_dir()
+            .unwrap_or_else(|| std::path::PathBuf::from("."))
+            .join("Hayamiru")
+            .join("config.json")
+    }
+
+    pub fn load() -> Self {
+        let path = Self::config_path();
+        match std::fs::read_to_string(&path) {
+            Ok(data) => serde_json::from_str(&data).unwrap_or_default(),
+            Err(_) => Self::default(),
+        }
+    }
+
+    pub fn save(&self) -> Result<(), AppError> {
+        let path = Self::config_path();
+        if let Some(parent) = path.parent() {
+            std::fs::create_dir_all(parent)?;
+        }
+        let json = serde_json::to_string_pretty(self)
+            .map_err(|e| AppError::Config(e.to_string()))?;
+        std::fs::write(&path, json)?;
+        info!("Settings saved to {}", path.display());
+        Ok(())
+    }
+
+    pub fn touch_recent(&mut self, path: &str, title: &str, position: f64) {
+        self.recent_files.retain(|f| f.path != path);
+        self.recent_files.insert(0, RecentFile {
+            path: path.to_string(),
+            title: title.to_string(),
+            position,
+            timestamp: chrono::Utc::now().timestamp(),
+        });
+        self.recent_files.truncate(20);
+    }
+
+    pub fn get_saved_position(&self, path: &str) -> Option<f64> {
+        self.recent_files
+            .iter()
+            .find(|f| f.path == path)
+            .map(|f| f.position)
+            .filter(|&p| p > 1.0)
+    }
+}

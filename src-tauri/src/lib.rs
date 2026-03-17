@@ -17,7 +17,9 @@ pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
         .manage(state::MpvState::new())
+        .manage(state::AppState::new())
         .invoke_handler(tauri::generate_handler![
+            // Playback
             commands::playback::init_player,
             commands::playback::open_file,
             commands::playback::toggle_pause,
@@ -29,6 +31,28 @@ pub fn run() {
             commands::playback::set_volume,
             commands::playback::set_speed,
             commands::playback::get_playback_state,
+            // Tracks
+            commands::tracks::get_tracks,
+            commands::tracks::select_subtitle,
+            commands::tracks::select_audio_track,
+            commands::tracks::load_subtitle,
+            commands::tracks::toggle_subtitles,
+            commands::tracks::set_subtitle_delay,
+            commands::tracks::set_audio_delay,
+            // Playlist
+            commands::playlist::playlist_add,
+            commands::playlist::playlist_remove,
+            commands::playlist::playlist_next,
+            commands::playlist::playlist_prev,
+            commands::playlist::playlist_play_index,
+            commands::playlist::playlist_clear,
+            commands::playlist::get_playlist,
+            // Settings
+            commands::settings::get_settings,
+            commands::settings::save_settings,
+            commands::settings::get_recent_files,
+            commands::settings::clear_recent_files,
+            // Window
             commands::window::toggle_fullscreen,
             commands::window::set_always_on_top,
             commands::window::minimize_window,

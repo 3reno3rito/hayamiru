@@ -5,6 +5,8 @@
   import { player } from "$lib/stores/player.svelte";
   import { initPlayer, openFile, togglePause, seekRelative, setVolume, getPlaybackState } from "$lib/bindings/playback";
   import { toggleFullscreen } from "$lib/bindings/window";
+  import { toggleSubtitles, getTracks, selectSubtitle, selectAudioTrack } from "$lib/bindings/tracks";
+  import { playlistNext, playlistPrev } from "$lib/bindings/playlist";
   import TitleBar from "$lib/components/TitleBar.svelte";
   import VideoControls from "$lib/components/VideoControls.svelte";
 
@@ -70,6 +72,19 @@
     };
   });
 
+  async function cycleTrack(type: "sub" | "audio") {
+    try {
+      const tracks = await getTracks();
+      const filtered = tracks.filter((t) => t.track_type === type);
+      if (filtered.length === 0) return;
+      const current = filtered.find((t) => t.selected);
+      const idx = current ? filtered.indexOf(current) : -1;
+      const next = filtered[(idx + 1) % filtered.length];
+      if (type === "sub") selectSubtitle(next.id);
+      else selectAudioTrack(next.id);
+    } catch {}
+  }
+
   function handleKeyDown(e: KeyboardEvent) {
     if (e.target instanceof HTMLInputElement) return;
 
@@ -81,6 +96,10 @@
       case "ArrowUp": e.preventDefault(); player.volume = Math.min(100, player.volume + 5); setVolume(player.volume); break;
       case "ArrowDown": e.preventDefault(); player.volume = Math.max(0, player.volume - 5); setVolume(player.volume); break;
       case "m": case "M": player.muted = !player.muted; setVolume(player.muted ? 0 : player.volume); break;
+      case "v": case "V": cycleTrack("sub"); break;
+      case "a": case "A": cycleTrack("audio"); break;
+      case "n": case "N": playlistNext().catch(() => {}); break;
+      case "p": case "P": playlistPrev().catch(() => {}); break;
       case "Escape": if (player.fullscreen) toggleFullscreen(); break;
     }
 
@@ -94,7 +113,7 @@
     const selected = await open({
       multiple: false,
       filters: [
-        { name: "Video", extensions: ["mp4","mkv","avi","mov","wmv","flv","webm","mpg","mpeg","m4v","ts","vob"] },
+        { name: "Video", extensions: ["mp4","mkv","avi","mov","wmv","flv","webm","mpg","mpeg","m4v","3gp","ts","vob"] },
         { name: "Audio", extensions: ["mp3","flac","wav","ogg","m4a","aac","opus","wma"] },
         { name: "All", extensions: ["*"] },
       ],
@@ -106,7 +125,9 @@
   }
 
   function handleDoubleClick(e: MouseEvent) {
-    if ((e.target as HTMLElement).closest(".controls-overlay")) return;
+    const el = e.target as HTMLElement;
+    // Only toggle fullscreen when double-clicking the video area itself
+    if (el.closest(".controls-overlay") || el.closest("[data-panel]")) return;
     toggleFullscreen();
   }
 </script>
