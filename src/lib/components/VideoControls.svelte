@@ -1,5 +1,6 @@
 <script lang="ts">
   import { player } from "$lib/stores/player.svelte";
+  import { t } from "$lib/i18n/index.svelte";
   import { togglePause, setSpeed } from "$lib/bindings/playback";
   import { playlistNext, playlistPrev } from "$lib/bindings/playlist";
   import { toggleFullscreen } from "$lib/bindings/window";
@@ -52,7 +53,7 @@
     <div class="mb-2"><SeekBar /></div>
 
     <div class="flex items-center gap-1">
-      <button onclick={() => togglePause()} class="ctrl-btn w-9 h-9" title={player.playing ? "Pause" : "Play"}>
+      <button onclick={() => togglePause()} class="ctrl-btn w-9 h-9" title={player.playing ? `${t().pause} (Space)` : `${t().play} (Space)`}>
         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
           {#if player.playing}
             <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
@@ -63,14 +64,14 @@
       </button>
 
       <!-- Previous -->
-      <button onclick={() => playlistPrev().catch(() => {})} class="ctrl-btn w-8 h-8" title="Previous (P)">
+      <button onclick={() => playlistPrev().catch(() => {})} class="ctrl-btn w-8 h-8" title="{t().previous} (P)">
         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
           <path d="M6 6h2v12H6zm3.5 6l8.5 6V6z" />
         </svg>
       </button>
 
       <!-- Next -->
-      <button onclick={() => playlistNext().catch(() => {})} class="ctrl-btn w-8 h-8" title="Next (N)">
+      <button onclick={() => playlistNext().catch(() => {})} class="ctrl-btn w-8 h-8" title="{t().next} (N)">
         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
           <path d="M16 6h2v12h-2zm-10 6l8.5 6V6z" transform="scale(-1,1) translate(-24,0)" />
         </svg>
@@ -78,14 +79,14 @@
 
       <VolumeSlider />
 
-      <span class="text-xs text-white/70 ml-2 font-mono tabular-nums">
+      <span class="text-xs text-white/70 ml-2 tabular-nums">
         {player.formattedTime}
       </span>
 
       <div class="flex-1"></div>
 
       <!-- Subtitle -->
-      <button onclick={() => togglePanel("sub")} class="ctrl-btn w-8 h-8 {subPanelVisible ? 'text-blue-400' : ''}" title="Subtitles (V)">
+      <button onclick={() => togglePanel("sub")} class="ctrl-btn w-8 h-8 {subPanelVisible ? 'text-blue-400' : ''}" title="{t().subtitles} (V)">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <rect x="2" y="5" width="20" height="14" rx="2" stroke-width="2" />
           <path stroke-width="2" d="M6 13h4M14 13h4M8 17h8" />
@@ -93,7 +94,7 @@
       </button>
 
       <!-- Audio -->
-      <button onclick={() => togglePanel("audio")} class="ctrl-btn w-8 h-8 {audioPanelVisible ? 'text-blue-400' : ''}" title="Audio track (A)">
+      <button onclick={() => togglePanel("audio")} class="ctrl-btn w-8 h-8 {audioPanelVisible ? 'text-blue-400' : ''}" title="{t().audio} (A)">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
             d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2z" />
@@ -105,20 +106,20 @@
         bind:this={speedBtnEl}
         onclick={() => { closeAll(); speedDropOpen = !speedDropOpen; }}
         class="ctrl-btn h-7 px-2 text-xs font-medium {speedDropOpen ? 'text-blue-400' : ''}"
-        title="Playback speed"
+        title="{t().playbackSpeed}"
       >
         {player.speed}x
       </button>
 
       <!-- Playlist -->
-      <button onclick={() => togglePanel("playlist")} class="ctrl-btn w-8 h-8 {playlistPanelVisible ? 'text-blue-400' : ''}" title="Playlist">
+      <button onclick={() => togglePanel("playlist")} class="ctrl-btn w-8 h-8 {playlistPanelVisible ? 'text-blue-400' : ''}" title="{t().playlist}">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h10M4 18h10M18 14v6M15 17h6" />
         </svg>
       </button>
 
       <!-- Settings -->
-      <button onclick={() => togglePanel("settings")} class="ctrl-btn w-8 h-8 {settingsPanelVisible ? 'text-blue-400' : ''}" title="Settings">
+      <button onclick={() => togglePanel("settings")} class="ctrl-btn w-8 h-8 {settingsPanelVisible ? 'text-blue-400' : ''}" title="{t().settings}">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
             d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
@@ -127,7 +128,7 @@
       </button>
 
       <!-- Fullscreen -->
-      <button onclick={() => toggleFullscreen()} class="ctrl-btn w-8 h-8" title="Fullscreen (F)">
+      <button onclick={() => toggleFullscreen()} class="ctrl-btn w-8 h-8" title="{t().fullscreen} (F)">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
             d="M4 8V4m0 0h4M4 4l5 5m11-5h-4m4 0v4m0-4l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5h-4m4 0v-4m0 4l-5-5" />

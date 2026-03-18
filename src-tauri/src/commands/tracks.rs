@@ -1,7 +1,7 @@
 use tauri::State;
 
 use crate::error::AppError;
-use crate::services::tracks::{TrackInfo, TracksService};
+use crate::services::tracks::{SubStyle, TrackInfo, TracksService};
 use crate::state::MpvState;
 
 #[tauri::command]
@@ -43,5 +43,11 @@ pub async fn set_subtitle_delay(seconds: f64, state: State<'_, MpvState>) -> Res
 #[tauri::command]
 pub async fn set_audio_delay(seconds: f64, state: State<'_, MpvState>) -> Result<(), AppError> {
     TracksService::set_audio_delay(state.get()?, seconds)?;
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn set_sub_style(style: SubStyle, state: State<'_, MpvState>) -> Result<(), AppError> {
+    TracksService::set_sub_style(state.get()?, &style)?;
     Ok(())
 }

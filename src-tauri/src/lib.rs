@@ -46,6 +46,7 @@ pub fn run() {
             commands::tracks::toggle_subtitles,
             commands::tracks::set_subtitle_delay,
             commands::tracks::set_audio_delay,
+            commands::tracks::set_sub_style,
             // Playlist
             commands::playlist::playlist_add,
             commands::playlist::playlist_remove,

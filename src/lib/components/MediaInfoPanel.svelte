@@ -1,5 +1,6 @@
 <script lang="ts">
   import { getMediaInfo, type MediaInfo } from "$lib/bindings/media-info";
+  import { t } from "$lib/i18n/index.svelte";
 
   let { visible = $bindable(false) }: { visible: boolean } = $props();
 
@@ -36,7 +37,7 @@
 
   <div data-panel class="fixed right-4 bottom-16 z-[81] w-[300px] bg-[#18181c]/95 backdrop-blur-md border border-white/10 rounded-xl shadow-2xl text-[13px] text-white/90 select-none">
     <div class="flex items-center border-b border-white/[0.08] px-3 py-2">
-      <span class="font-medium text-xs">Media Info</span>
+      <span class="font-medium text-xs">{t().mediaInfo}</span>
       <div class="flex-1"></div>
       <button class="ctrl-btn w-6 h-6 text-xs" onclick={() => visible = false}>✕</button>
     </div>

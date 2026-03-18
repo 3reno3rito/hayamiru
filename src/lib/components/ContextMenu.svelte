@@ -1,5 +1,6 @@
 <script lang="ts">
   import { player } from "$lib/stores/player.svelte";
+  import { t } from "$lib/i18n/index.svelte";
   import {
     togglePause, stop, screenshot,
     toggleAbLoop, getChapters, seekChapter,
@@ -118,40 +119,40 @@
     onkeydown={(e) => e.key === "Escape" && (page === "main" ? onclose() : page = "main")}
   >
     {#if page === "main"}
-      <button class="ctx-item" onclick={() => act(onopen)}>Open File<span class="ctx-key">Ctrl+O</span></button>
+      <button class="ctx-item" onclick={() => act(onopen)}>{t().openFile}<span class="ctx-key">Ctrl+O</span></button>
       <div class="ctx-sep"></div>
       <button class="ctx-item" onclick={() => act(() => togglePause())}>
-        {player.playing ? "Pause" : "Play"}<span class="ctx-key">Space</span>
+        {player.playing ? t().pause : t().play}<span class="ctx-key">Space</span>
       </button>
-      <button class="ctx-item" onclick={() => act(() => stop())}>Stop</button>
+      <button class="ctx-item" onclick={() => act(() => stop())}>{t().stop}</button>
       <div class="ctx-sep"></div>
       {#if subTracks.length > 0}
-        <button class="ctx-item" onclick={() => page = "sub"}>Subtitles<span class="ctx-arrow">▸</span></button>
+        <button class="ctx-item" onclick={() => page = "sub"}>{t().subtitles}<span class="ctx-arrow">▸</span></button>
       {/if}
       {#if audioTracks.length > 0}
-        <button class="ctx-item" onclick={() => page = "audio"}>Audio<span class="ctx-arrow">▸</span></button>
+        <button class="ctx-item" onclick={() => page = "audio"}>{t().audio}<span class="ctx-arrow">▸</span></button>
       {/if}
-      <button class="ctx-item" onclick={() => page = "speed"}>Speed ({player.speed}x)<span class="ctx-arrow">▸</span></button>
+      <button class="ctx-item" onclick={() => page = "speed"}>{t().speed} ({player.speed}x)<span class="ctx-arrow">▸</span></button>
       {#if chapters.length > 0}
-        <button class="ctx-item" onclick={() => page = "chapters"}>Chapters<span class="ctx-arrow">▸</span></button>
+        <button class="ctx-item" onclick={() => page = "chapters"}>{t().chapters}<span class="ctx-arrow">▸</span></button>
       {/if}
-      <button class="ctx-item" onclick={() => page = "aspect"}>Aspect Ratio<span class="ctx-arrow">▸</span></button>
+      <button class="ctx-item" onclick={() => page = "aspect"}>{t().aspectRatio}<span class="ctx-arrow">▸</span></button>
       <div class="ctx-sep"></div>
-      <button class="ctx-item" onclick={handleAbLoop}>A-B Loop ({abLoopLabel})<span class="ctx-key">L</span></button>
-      <button class="ctx-item" onclick={handleScreenshot}>Screenshot<span class="ctx-key">S</span></button>
+      <button class="ctx-item" onclick={handleAbLoop}>{t().abLoop} ({abLoopLabel})<span class="ctx-key">L</span></button>
+      <button class="ctx-item" onclick={handleScreenshot}>{t().screenshot}<span class="ctx-key">S</span></button>
       <div class="ctx-sep"></div>
-      <button class="ctx-item" onclick={() => { onclose(); onpanel("info"); }}>Media Info<span class="ctx-key">I</span></button>
-      <button class="ctx-item" onclick={() => { onclose(); onpanel("settings"); }}>Settings</button>
+      <button class="ctx-item" onclick={() => { onclose(); onpanel("info"); }}>{t().mediaInfo}<span class="ctx-key">I</span></button>
+      <button class="ctx-item" onclick={() => { onclose(); onpanel("settings"); }}>{t().settings}</button>
       <div class="ctx-sep"></div>
       <button class="ctx-item" onclick={handleAlwaysOnTop}>
-        {alwaysOnTop ? "✓ " : "\u00A0 "}Always on Top
+        {alwaysOnTop ? "✓ " : "\u00A0 "}{t().alwaysOnTop}
       </button>
 
     {:else if page === "sub"}
-      <button class="ctx-back" onclick={() => page = "main"}>← Subtitles</button>
+      <button class="ctx-back" onclick={() => page = "main"}>← {t().subtitles}</button>
       <div class="ctx-sep"></div>
       <button class="ctx-item" onclick={() => { selectSubtitle(0); onclose(); }}>
-        {subTracks.every((t) => !t.selected) ? "✓ " : "\u00A0 "}Off
+        {subTracks.every((st) => !st.selected) ? "✓ " : "\u00A0 "}{t().off}
       </button>
       {#each subTracks as t}
         <button class="ctx-item" onclick={() => { selectSubtitle(t.id); onclose(); }}>
@@ -160,7 +161,7 @@
       {/each}
 
     {:else if page === "audio"}
-      <button class="ctx-back" onclick={() => page = "main"}>← Audio</button>
+      <button class="ctx-back" onclick={() => page = "main"}>← {t().audio}</button>
       <div class="ctx-sep"></div>
       {#each audioTracks as t}
         <button class="ctx-item" onclick={() => { selectAudioTrack(t.id); onclose(); }}>
@@ -169,7 +170,7 @@
       {/each}
 
     {:else if page === "speed"}
-      <button class="ctx-back" onclick={() => page = "main"}>← Speed</button>
+      <button class="ctx-back" onclick={() => page = "main"}>← {t().speed}</button>
       <div class="ctx-sep"></div>
       {#each speeds as s}
         <button class="ctx-item" onclick={() => { player.speed = s; setSpeed(s); onclose(); }}>
@@ -178,7 +179,7 @@
       {/each}
 
     {:else if page === "chapters"}
-      <button class="ctx-back" onclick={() => page = "main"}>← Chapters</button>
+      <button class="ctx-back" onclick={() => page = "main"}>← {t().chapters}</button>
       <div class="ctx-sep"></div>
       <div class="max-h-[300px] overflow-y-auto">
         {#each chapters as ch}
@@ -190,7 +191,7 @@
       </div>
 
     {:else if page === "aspect"}
-      <button class="ctx-back" onclick={() => page = "main"}>← Aspect Ratio</button>
+      <button class="ctx-back" onclick={() => page = "main"}>← {t().aspectRatio}</button>
       <div class="ctx-sep"></div>
       {#each ratios as [value, label]}
         <button class="ctx-item" onclick={() => { setAspectRatio(value); currentRatio = value; onclose(); }}>

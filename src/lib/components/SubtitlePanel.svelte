@@ -1,12 +1,38 @@
 <script lang="ts">
-  import { getTracks, selectSubtitle, loadSubtitle, toggleSubtitles, setSubtitleDelay, type TrackInfo } from "$lib/bindings/tracks";
+  import { getTracks, selectSubtitle, loadSubtitle, toggleSubtitles, setSubtitleDelay, setSubStyle, type TrackInfo, type SubStyle } from "$lib/bindings/tracks";
   import { open } from "@tauri-apps/plugin-dialog";
+  import Select from "./Select.svelte";
+  import { t } from "$lib/i18n/index.svelte";
 
   let { visible = $bindable(false) }: { visible: boolean } = $props();
 
   let tracks = $state<TrackInfo[]>([]);
   let delay = $state(0);
   let subVisible = $state(true);
+  let page = $state<"main" | "style">("main");
+
+  // Style state
+  const fonts = ["Tahoma", "Arial", "Segoe UI", "Verdana", "Trebuchet MS", "Calibri", "Consolas", "Impact", "Georgia"];
+  let font = $state("Tahoma");
+  let size = $state(55);
+  let color = $state("#ffffff");
+  let borderColor = $state("#000000");
+  let borderSize = $state(3);
+  let position = $state(100);
+
+  let debounceTimer: ReturnType<typeof setTimeout> | null = null;
+
+  function applyStyle() {
+    if (debounceTimer) clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => {
+      setSubStyle({ font, size, color, border_color: borderColor, border_size: borderSize, position });
+    }, 150);
+  }
+
+  function resetStyle() {
+    font = "Tahoma"; size = 55; color = "#ffffff"; borderColor = "#000000"; borderSize = 3; position = 100;
+    applyStyle();
+  }
 
   async function refresh() {
     try {
@@ -15,7 +41,7 @@
     } catch {}
   }
 
-  $effect(() => { if (visible) refresh(); });
+  $effect(() => { if (visible) { refresh(); page = "main"; } });
 
   async function handleSelect(id: number) {
     await selectSubtitle(id);
@@ -52,71 +78,134 @@
   <div class="fixed inset-0 z-[80]" onclick={() => visible = false}></div>
 
   <div data-panel class="fixed right-4 bottom-16 z-[81] w-[280px] max-h-[70vh] bg-[#18181c]/95 backdrop-blur-md border border-white/10 rounded-xl shadow-2xl text-[13px] text-white/90 flex flex-col select-none">
-    <!-- Header -->
-    <div class="flex items-center border-b border-white/[0.08] px-3 py-2">
-      <span class="font-medium text-xs">Subtitles</span>
-      <div class="flex-1"></div>
-      <button class="ctrl-btn w-6 h-6 text-xs" onclick={() => visible = false}>✕</button>
-    </div>
 
-    <!-- Track list -->
-    <div class="flex-1 overflow-y-auto max-h-[180px]">
-      <button
-        class="w-full flex items-center px-3 py-2 hover:bg-white/[0.08] text-left {tracks.every(t => !t.selected) ? 'text-blue-400' : 'text-white/70'}"
-        onclick={() => handleSelect(0)}
-      >
-        <span class="w-4 text-[10px] mr-2">{tracks.every((t: TrackInfo) => !t.selected) ? "✓" : "\u00A0"}</span>
-        <span>Disabled</span>
-      </button>
-
-      {#each tracks as track}
-        <button
-          class="w-full flex items-center px-3 py-2 hover:bg-white/[0.08] text-left {track.selected ? 'text-blue-400' : 'text-white/70'}"
-          onclick={() => handleSelect(track.id)}
-        >
-          <span class="w-4 text-[10px] mr-2">{track.selected ? "✓" : "\u00A0"}</span>
-          <span class="flex-1 truncate">
-            {track.title || track.lang || `Track ${track.id}`}
-            {#if track.lang && track.title}
-              <span class="text-white/30 ml-1">[{track.lang}]</span>
-            {/if}
-          </span>
-        </button>
-      {/each}
-
-      {#if tracks.length === 0}
-        <div class="px-3 py-4 text-center text-white/30 text-xs">No subtitle tracks</div>
-      {/if}
-    </div>
-
-    <!-- Load external -->
-    <div class="border-t border-white/[0.08]">
-      <button
-        class="w-full flex items-center justify-center gap-1.5 px-3 py-2 hover:bg-white/[0.08] text-white/60 hover:text-white/90"
-        onclick={handleLoadExternal}
-      >
-        Load external file...
-      </button>
-    </div>
-
-    <!-- Controls -->
-    <div class="border-t border-white/[0.08] px-3 py-2 space-y-2">
-      <div class="flex items-center justify-between">
-        <span class="text-white/50">Visibility</span>
-        <button
-          class="px-2 py-0.5 rounded text-xs {subVisible ? 'bg-blue-500/30 text-blue-400' : 'bg-white/10 text-white/40'}"
-          onclick={handleToggle}
-        >{subVisible ? "ON" : "OFF"}</button>
+    {#if page === "main"}
+      <!-- Header -->
+      <div class="flex items-center border-b border-white/[0.08] px-3 py-2">
+        <span class="font-medium text-xs">{t().subtitles}</span>
+        <div class="flex-1"></div>
+        <button class="ctrl-btn w-6 h-6 text-xs" onclick={() => visible = false}>✕</button>
       </div>
 
-      <div class="flex items-center justify-between">
-        <span class="text-white/50">Delay</span>
-        <div class="flex items-center gap-1">
-          <button class="ctrl-btn w-6 h-6 text-xs" onclick={() => handleDelayChange(-0.1)}>-</button>
-          <span class="w-14 text-center font-mono text-xs">{delay.toFixed(1)}s</span>
-          <button class="ctrl-btn w-6 h-6 text-xs" onclick={() => handleDelayChange(0.1)}>+</button>
+      <!-- Track list -->
+      <div class="flex-1 overflow-y-auto max-h-[180px]">
+        <button
+          class="w-full flex items-center px-3 py-2 hover:bg-white/[0.08] text-left {tracks.every(t => !t.selected) ? 'text-blue-400' : 'text-white/70'}"
+          onclick={() => handleSelect(0)}
+        >
+          <span class="w-4 text-xs mr-2">{tracks.every((t: TrackInfo) => !t.selected) ? "✓" : "\u00A0"}</span>
+          <span>{t().disabled}</span>
+        </button>
+
+        {#each tracks as track}
+          <button
+            class="w-full flex items-center px-3 py-2 hover:bg-white/[0.08] text-left {track.selected ? 'text-blue-400' : 'text-white/70'}"
+            onclick={() => handleSelect(track.id)}
+          >
+            <span class="w-4 text-xs mr-2">{track.selected ? "✓" : "\u00A0"}</span>
+            <span class="flex-1 truncate">
+              {track.title || track.lang || `Track ${track.id}`}
+              {#if track.lang && track.title}
+                <span class="text-white/30 ml-1">[{track.lang}]</span>
+              {/if}
+            </span>
+          </button>
+        {/each}
+
+        {#if tracks.length === 0}
+          <div class="px-3 py-4 text-center text-white/30 text-xs">{t().noSubtitleTracks}</div>
+        {/if}
+      </div>
+
+      <!-- Load external -->
+      <div class="border-t border-white/[0.08]">
+        <button
+          class="w-full flex items-center justify-center gap-1.5 px-3 py-2 hover:bg-white/[0.08] text-white/60 hover:text-white/90"
+          onclick={handleLoadExternal}
+        >
+          {t().loadExternalFile}
+        </button>
+      </div>
+
+      <!-- Controls -->
+      <div class="border-t border-white/[0.08] px-3 py-2 space-y-2">
+        <div class="flex items-center justify-between">
+          <span class="text-white/50">{t().visibility}</span>
+          <button
+            class="px-2 py-0.5 rounded text-xs {subVisible ? 'bg-blue-500/30 text-blue-400' : 'bg-white/10 text-white/40'}"
+            onclick={handleToggle}
+          >{subVisible ? t().on : t().off}</button>
+        </div>
+
+        <div class="flex items-center justify-between">
+          <span class="text-white/50">{t().delay}</span>
+          <div class="flex items-center gap-1">
+            <button class="ctrl-btn w-6 h-6 text-xs" onclick={() => handleDelayChange(-0.1)}>-</button>
+            <span class="w-14 text-center tabular-nums text-xs">{delay.toFixed(1)}s</span>
+            <button class="ctrl-btn w-6 h-6 text-xs" onclick={() => handleDelayChange(0.1)}>+</button>
+          </div>
         </div>
       </div>
-    </div>
+
+      <!-- Style nav -->
+      <div class="border-t border-white/[0.08]">
+        <button class="w-full flex items-center justify-between px-3 py-2 hover:bg-white/[0.08] text-white/60 hover:text-white/90" onclick={() => page = "style"}>
+          <span>{t().style}</span>
+          <svg class="w-3.5 h-3.5 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+
+    {:else if page === "style"}
+      <!-- Style header -->
+      <div class="flex items-center border-b border-white/[0.08] px-3 py-2">
+        <button class="ctrl-btn w-6 h-6 text-xs mr-2 hover:bg-white/10 rounded" onclick={() => page = "main"}>←</button>
+        <span class="font-medium text-xs">{t().style}</span>
+        <div class="flex-1"></div>
+        <button class="text-xs text-white/40 hover:text-white/70" onclick={resetStyle}>{t().reset}</button>
+      </div>
+
+      <!-- Style controls -->
+      <div class="flex-1 overflow-y-auto p-3 space-y-3">
+        <div>
+          <span class="text-white/50 text-xs block mb-1">{t().font}</span>
+          <Select items={fonts} value={font} itemStyle={(f) => `font-family:'${f}'`} onchange={(f) => { font = f; applyStyle(); }} />
+        </div>
+
+        <div>
+          <div class="flex items-center justify-between mb-1">
+            <span class="text-white/50 text-xs">{t().size}</span>
+            <span class="text-white/50 text-xs tabular-nums">{size}</span>
+          </div>
+          <input type="range" min="20" max="100" bind:value={size} oninput={applyStyle} class="s-range w-full" />
+        </div>
+
+        <div class="flex items-center gap-4">
+          <div class="flex items-center gap-2">
+            <span class="text-white/50 text-xs">{t().text}</span>
+            <input type="color" bind:value={color} oninput={applyStyle} class="s-color" />
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-white/50 text-xs">{t().border}</span>
+            <input type="color" bind:value={borderColor} oninput={applyStyle} class="s-color" />
+          </div>
+        </div>
+
+        <div>
+          <div class="flex items-center justify-between mb-1">
+            <span class="text-white/50 text-xs">{t().borderSize}</span>
+            <span class="text-white/50 text-xs tabular-nums">{borderSize}</span>
+          </div>
+          <input type="range" min="0" max="10" bind:value={borderSize} oninput={applyStyle} class="s-range w-full" />
+        </div>
+
+        <div>
+          <div class="flex items-center justify-between mb-1">
+            <span class="text-white/50 text-xs">{t().position}</span>
+            <span class="text-white/50 text-xs tabular-nums">{position}%</span>
+          </div>
+          <input type="range" min="0" max="100" bind:value={position} oninput={applyStyle} class="s-range w-full" />
+        </div>
+      </div>
+    {/if}
   </div>
 {/if}

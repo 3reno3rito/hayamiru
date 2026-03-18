@@ -1,4 +1,4 @@
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 use crate::error::MpvError;
 use crate::mpv::player::MpvPlayer;
@@ -59,4 +59,24 @@ impl TracksService {
     pub fn set_audio_delay(mpv: &MpvPlayer, seconds: f64) -> Result<(), MpvError> {
         mpv.set("audio-delay", seconds)
     }
+
+    pub fn set_sub_style(mpv: &MpvPlayer, style: &SubStyle) -> Result<(), MpvError> {
+        mpv.set::<&str>("sub-font", &style.font)?;
+        mpv.set("sub-font-size", style.size as f64)?;
+        mpv.set::<&str>("sub-color", &style.color)?;
+        mpv.set::<&str>("sub-border-color", &style.border_color)?;
+        mpv.set("sub-border-size", style.border_size as f64)?;
+        mpv.set("sub-pos", style.position as f64)?;
+        Ok(())
+    }
+}
+
+#[derive(Serialize, Deserialize, Clone)]
+pub struct SubStyle {
+    pub font: String,
+    pub size: u32,
+    pub color: String,
+    pub border_color: String,
+    pub border_size: u32,
+    pub position: u32,
 }

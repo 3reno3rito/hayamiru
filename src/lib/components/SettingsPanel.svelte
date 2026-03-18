@@ -1,6 +1,7 @@
 <script lang="ts">
   import { setBrightness, setContrast, setSaturation, setVideoZoom, resetVideoZoomPan } from "$lib/bindings/video";
   import { setAudioNormalization, setAudioEqualizer, resetAudioEqualizer } from "$lib/bindings/audio-fx";
+  import { t, setLocale, getLocale } from "$lib/i18n/index.svelte";
 
   let { visible = $bindable(false) }: { visible: boolean } = $props();
   let tab = $state<"general" | "video" | "audio" | "subtitles">("general");
@@ -38,7 +39,7 @@
   const speeds = [0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 3.0, 4.0];
 
   // Language
-  let language = $state("en");
+  let language = $state(getLocale());
   const languages: Record<string, string> = {
     "en": "English",
     "pt": "Português",
@@ -52,20 +53,15 @@
     "ru": "Русский",
     "ar": "العربية",
     "hi": "हिन्दी",
-    "tr": "Türkçe",
-    "pl": "Polski",
-    "nl": "Nederlands",
   };
 
-  // Custom dropdown state
-  let openDrop = $state<string | null>(null);
-  function toggleDrop(id: string) { openDrop = openDrop === id ? null : id; }
+  import Select from "./Select.svelte";
 
   const tabs = [
-    { id: "general" as const, label: "General" },
-    { id: "video" as const, label: "Video" },
-    { id: "audio" as const, label: "Audio" },
-    { id: "subtitles" as const, label: "Subtitles" },
+    { id: "general" as const, get label() { return t().general; } },
+    { id: "video" as const, get label() { return t().video; } },
+    { id: "audio" as const, get label() { return t().audio; } },
+    { id: "subtitles" as const, get label() { return t().subtitles; } },
   ];
 
   function resetVideo() {
@@ -78,7 +74,7 @@
   function setPreset(name: string) { eqBands = [...eqPresets[name]]; applyEq(); }
 
   function resetAll() {
-    volume = 100; speed = 1.0; rememberPosition = true; autoPlay = true; language = "en";
+    volume = 100; speed = 1.0; rememberPosition = true; autoPlay = true; language = "en"; setLocale("en");
     resetVideo();
     normEnabled = false; resetEq(); setAudioNormalization(false);
     subFont = "Segoe UI"; subSize = 55; subColor = "#FFFFFF";
@@ -100,77 +96,58 @@
   >
     <!-- Header -->
     <div class="flex items-center justify-between px-4 py-3 border-b border-white/[0.08]">
-      <span class="font-medium text-sm">Settings</span>
+      <span class="font-medium text-sm">{t().settings}</span>
       <button onclick={close} class="ctrl-btn w-7 h-7 text-xs">✕</button>
     </div>
 
     <div class="flex flex-1 min-h-0">
       <!-- Sidebar -->
       <div class="w-[120px] border-r border-white/[0.08] py-2 flex-shrink-0">
-        {#each tabs as t}
+        {#each tabs as tb}
           <button
-            onclick={() => tab = t.id}
-            class="w-full text-left px-4 py-2 text-[13px] transition-colors {tab === t.id ? 'bg-white/10 text-white' : 'text-white/50 hover:text-white/80 hover:bg-white/[0.05]'}"
-          >{t.label}</button>
+            onclick={() => tab = tb.id}
+            class="w-full text-left px-4 py-2 text-xs transition-colors {tab === tb.id ? 'bg-white/10 text-white font-medium' : 'text-white/50 hover:text-white/80 hover:bg-white/[0.05]'}"
+          >{tb.label}</button>
         {/each}
       </div>
 
       <!-- Content -->
-      <!-- svelte-ignore a11y_no_static_element_interactions -->
-      <div class="flex-1 overflow-y-auto p-4 space-y-4" onclick={() => openDrop = null}>
+      <div class="flex-1 overflow-y-auto p-4 space-y-4">
         {#if tab === "general"}
           <div class="s-group">
             <div class="s-row">
-              <span>Language</span>
-              <div class="relative">
-                <button class="s-drop-btn {openDrop === 'lang' ? 'text-blue-400' : ''}" onclick={() => toggleDrop("lang")}>{languages[language]} <svg class="w-4 h-4 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></button>
-                {#if openDrop === "lang"}
-                  <div class="s-drop-list">
-                    {#each Object.entries(languages) as [code, name]}
-                      <button class="s-drop-item {language === code ? 'text-blue-400' : 'text-white/80'}" onclick={() => { language = code; openDrop = null; }}>{name}</button>
-                    {/each}
-                  </div>
-                {/if}
-              </div>
+              <span>{t().language}</span>
+              <Select items={Object.keys(languages)} value={language} label={(code) => languages[code]} onchange={(code) => { language = code; setLocale(code); }} />
             </div>
           </div>
           <div class="s-group">
             <label class="s-row">
-              <span>Default Volume</span>
+              <span>{t().defaultVolume}</span>
               <div class="flex items-center gap-2">
                 <input type="range" min="0" max="100" bind:value={volume} class="s-range flex-1" />
                 <span class="text-white/50 w-8 text-right">{volume}%</span>
               </div>
             </label>
             <div class="s-row">
-              <span>Default Speed</span>
-              <div class="relative">
-                <button class="s-drop-btn {openDrop === 'speed' ? 'text-blue-400' : ''}" onclick={() => toggleDrop("speed")}>{speed}x <svg class="w-4 h-4 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></button>
-                {#if openDrop === "speed"}
-                  <div class="s-drop-list">
-                    {#each speeds as s}
-                      <button class="s-drop-item {speed === s ? 'text-blue-400' : 'text-white/80'}" onclick={() => { speed = s; openDrop = null; }}>{s}x</button>
-                    {/each}
-                  </div>
-                {/if}
-              </div>
+              <span>{t().defaultSpeed}</span>
+              <Select items={speeds} value={speed} label={(s) => `${s}x`} onchange={(s) => speed = s} />
             </div>
           </div>
           <div class="s-group">
-            <label class="s-toggle"><span>Remember Position</span><input type="checkbox" bind:checked={rememberPosition} /></label>
-            <label class="s-toggle"><span>Auto Play</span><input type="checkbox" bind:checked={autoPlay} /></label>
+            <label class="s-toggle"><span>{t().rememberPosition}</span><input type="checkbox" bind:checked={rememberPosition} /></label>
+            <label class="s-toggle"><span>{t().autoPlay}</span><input type="checkbox" bind:checked={autoPlay} /></label>
           </div>
 
         {:else if tab === "video"}
           <div class="s-group">
             <div class="flex items-center justify-between mb-1">
-              <span class="text-white/50 text-xs uppercase tracking-wide">Color</span>
-              <button onclick={resetVideo} class="text-xs text-white/40 hover:text-white/70">Reset</button>
+              <span class="text-white/50 text-xs uppercase tracking-wide">{t().color}</span>
+              <button onclick={resetVideo} class="text-xs text-white/40 hover:text-white/70">{t().reset}</button>
             </div>
             {#each [
-              { label: "Brightness", get: () => brightness, set: (v: number) => { brightness = v; setBrightness(v); } },
-              { label: "Contrast", get: () => contrast, set: (v: number) => { contrast = v; setContrast(v); } },
-              { label: "Saturation", get: () => saturation, set: (v: number) => { saturation = v; setSaturation(v); } },
+              { get label() { return t().brightness; }, get: () => brightness, set: (v: number) => { brightness = v; setBrightness(v); } },
+              { get label() { return t().contrast; }, get: () => contrast, set: (v: number) => { contrast = v; setContrast(v); } },
+              { get label() { return t().saturation; }, get: () => saturation, set: (v: number) => { saturation = v; setSaturation(v); } },
             ] as ctrl}
               <label class="s-row">
                 <span>{ctrl.label}</span>
@@ -181,7 +158,7 @@
               </label>
             {/each}
             <label class="s-row">
-              <span>Zoom</span>
+              <span>{t().zoom}</span>
               <div class="flex items-center gap-2">
                 <input type="range" min="-1" max="3" step="0.1" bind:value={zoom} oninput={() => setVideoZoom(zoom)} class="s-range flex-1" />
                 <span class="text-white/50 w-8 text-right">{zoom.toFixed(1)}</span>
@@ -191,25 +168,25 @@
 
         {:else if tab === "audio"}
           <div class="s-group">
-            <label class="s-toggle"><span>Normalization</span>
+            <label class="s-toggle"><span>{t().normalization}</span>
               <input type="checkbox" bind:checked={normEnabled} onchange={() => setAudioNormalization(normEnabled)} />
             </label>
           </div>
           <div class="s-group">
             <div class="flex items-center justify-between mb-1">
-              <span class="text-white/50 text-xs uppercase tracking-wide">Equalizer</span>
-              <button onclick={resetEq} class="text-xs text-white/40 hover:text-white/70">Reset</button>
+              <span class="text-white/50 text-xs uppercase tracking-wide">{t().equalizer}</span>
+              <button onclick={resetEq} class="text-xs text-white/40 hover:text-white/70">{t().reset}</button>
             </div>
             <div class="flex gap-1 flex-wrap mb-2">
               {#each Object.keys(eqPresets) as name}
-                <button class="px-2 py-0.5 rounded text-[11px] bg-white/[0.08] hover:bg-white/[0.15] text-white/70" onclick={() => setPreset(name)}>{name}</button>
+                <button class="px-2.5 py-1 rounded text-xs bg-white/[0.08] hover:bg-white/[0.15] text-white/70" onclick={() => setPreset(name)}>{name}</button>
               {/each}
             </div>
             {#each eqLabels as label, i}
               <div class="flex items-center gap-2">
-                <span class="w-12 text-[11px] text-white/50 text-right">{label}</span>
+                <span class="w-12 text-xs text-white/50 text-right">{label}</span>
                 <input type="range" min="-12" max="12" step="1" bind:value={eqBands[i]} oninput={applyEq} class="s-range flex-1" />
-                <span class="w-6 text-[11px] text-white/50 text-right">{eqBands[i] > 0 ? "+" : ""}{eqBands[i]}</span>
+                <span class="w-6 text-xs text-white/50 text-right tabular-nums">{eqBands[i] > 0 ? "+" : ""}{eqBands[i]}</span>
               </div>
             {/each}
           </div>
@@ -217,42 +194,33 @@
         {:else if tab === "subtitles"}
           <div class="s-group">
             <div class="s-row">
-              <span>Font</span>
-              <div class="relative">
-                <button class="s-drop-btn {openDrop === 'font' ? 'text-blue-400' : ''}" onclick={() => toggleDrop("font")}>{subFont} <svg class="w-4 h-4 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></button>
-                {#if openDrop === "font"}
-                  <div class="s-drop-list">
-                    {#each fonts as f}
-                      <button class="s-drop-item {subFont === f ? 'text-blue-400' : 'text-white/80'}" style="font-family:'{f}'" onclick={() => { subFont = f; openDrop = null; }}>{f}</button>
-                    {/each}
-                  </div>
-                {/if}
-              </div>
+              <span>{t().font}</span>
+              <Select items={fonts} value={subFont} itemStyle={(f) => `font-family:'${f}'`} onchange={(f) => subFont = f} />
             </div>
             <label class="s-row">
-              <span>Size</span>
+              <span>{t().size}</span>
               <div class="flex items-center gap-2">
                 <input type="range" min="10" max="100" bind:value={subSize} class="s-range flex-1" />
                 <span class="text-white/50 w-8 text-right">{subSize}</span>
               </div>
             </label>
             <div class="flex items-center justify-between py-1">
-              <span>Text Color</span>
+              <span>{t().textColor}</span>
               <input type="color" bind:value={subColor} class="s-color" />
             </div>
             <div class="flex items-center justify-between py-1">
-              <span>Border Color</span>
+              <span>{t().borderColor}</span>
               <input type="color" bind:value={subBorderColor} class="s-color" />
             </div>
             <label class="s-row">
-              <span>Border Size</span>
+              <span>{t().borderSize}</span>
               <div class="flex items-center gap-2">
                 <input type="range" min="0" max="5" step="0.5" bind:value={subBorderSize} class="s-range flex-1" />
                 <span class="text-white/50 w-8 text-right">{subBorderSize}</span>
               </div>
             </label>
             <label class="s-row">
-              <span>Position</span>
+              <span>{t().position}</span>
               <div class="flex items-center gap-2">
                 <input type="range" min="0" max="100" bind:value={subPosition} class="s-range flex-1" />
                 <span class="text-white/50 w-8 text-right">{subPosition}%</span>
@@ -265,7 +233,7 @@
 
     <!-- Footer -->
     <div class="flex items-center px-4 py-2 border-t border-white/[0.08]">
-      <button class="text-[11px] text-white/30 hover:text-white/60" onclick={resetAll}>Restore Defaults</button>
+      <button class="text-[11px] text-white/30 hover:text-white/60" onclick={resetAll}>{t().restoreDefaults}</button>
       <div class="flex-1"></div>
       <span class="text-[11px] text-white/20">Hayamiru v0.1.0</span>
     </div>
@@ -287,36 +255,4 @@
   }
   .s-toggle input[type="checkbox"]:checked { background: oklch(0.65 0.25 250); }
   .s-toggle input[type="checkbox"]:checked::after { transform: translateX(16px); }
-  .s-range {
-    appearance: none; height: 4px; background: rgba(255,255,255,0.15);
-    border-radius: 2px; outline: none; cursor: pointer;
-  }
-  .s-range::-webkit-slider-thumb {
-    appearance: none; width: 14px; height: 14px; background: oklch(0.65 0.25 250);
-    border-radius: 50%; cursor: pointer;
-  }
-  .s-drop-btn {
-    width: 100%; display: flex; align-items: center; justify-content: space-between;
-    background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 6px; color: rgba(255,255,255,0.9); padding: 6px 10px;
-    font-size: 13px; cursor: pointer;
-  }
-  .s-drop-btn:hover { background: rgba(255,255,255,0.12); }
-  .s-drop-list {
-    position: absolute; left: 0; right: 0; top: 100%; margin-top: 4px; z-index: 10;
-    max-height: 200px; overflow-y: auto;
-    background: #1a1a1f; border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 8px; box-shadow: 0 8px 32px rgba(0,0,0,0.5); padding: 4px 0;
-  }
-  .s-drop-item {
-    width: 100%; text-align: left; padding: 6px 12px; font-size: 13px;
-    background: none; border: none; cursor: pointer;
-  }
-  .s-drop-item:hover { background: rgba(255,255,255,0.1); }
-  .s-color {
-    appearance: none; width: 32px; height: 24px; border: 1px solid rgba(255,255,255,0.15);
-    border-radius: 4px; cursor: pointer; padding: 0; background: transparent;
-  }
-  .s-color::-webkit-color-swatch-wrapper { padding: 2px; }
-  .s-color::-webkit-color-swatch { border-radius: 2px; border: none; }
 </style>

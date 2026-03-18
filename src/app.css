@@ -3,8 +3,7 @@
 @theme {
   --color-seek-bg: oklch(0.25 0.005 260);
   --color-seek-progress: oklch(0.65 0.25 250);
-  --font-sans: "Inter", system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", monospace;
+  --font-sans: "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, sans-serif;
 }
 
 html, body {
@@ -70,6 +69,24 @@ html, body {
 .drag-region { -webkit-app-region: drag; app-region: drag; }
 .no-drag { -webkit-app-region: no-drag; app-region: no-drag; }
 
+
+/* Shared range slider */
+.s-range {
+  appearance: none; height: 4px; background: rgba(255,255,255,0.15);
+  border-radius: 2px; outline: none; cursor: pointer;
+}
+.s-range::-webkit-slider-thumb {
+  appearance: none; width: 14px; height: 14px; background: oklch(0.65 0.25 250);
+  border-radius: 50%; cursor: pointer;
+}
+
+/* Shared color picker */
+.s-color {
+  appearance: none; width: 32px; height: 24px; border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 4px; cursor: pointer; padding: 0; background: transparent;
+}
+.s-color::-webkit-color-swatch-wrapper { padding: 2px; }
+.s-color::-webkit-color-swatch { border-radius: 2px; border: none; }
 
 /* Custom scrollbar */
 ::-webkit-scrollbar { width: 6px; height: 6px; }

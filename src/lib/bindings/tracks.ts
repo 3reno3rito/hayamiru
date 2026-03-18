@@ -15,3 +15,13 @@ export const loadSubtitle = (path: string) => invoke<void>("load_subtitle", { pa
 export const toggleSubtitles = () => invoke<void>("toggle_subtitles");
 export const setSubtitleDelay = (seconds: number) => invoke<void>("set_subtitle_delay", { seconds });
 export const setAudioDelay = (seconds: number) => invoke<void>("set_audio_delay", { seconds });
+
+export interface SubStyle {
+  font: string;
+  size: number;
+  color: string;
+  border_color: string;
+  border_size: number;
+  position: number;
+}
+export const setSubStyle = (style: SubStyle) => invoke<void>("set_sub_style", { style });

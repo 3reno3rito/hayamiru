@@ -4,6 +4,7 @@
     playlistClear, type PlaylistItem,
   } from "$lib/bindings/playlist";
   import { open } from "@tauri-apps/plugin-dialog";
+  import { t } from "$lib/i18n/index.svelte";
 
   let { visible = $bindable(false) }: { visible: boolean } = $props();
 
@@ -72,7 +73,7 @@
   <div data-panel class="fixed right-4 bottom-16 z-[81] w-[320px] max-h-[80vh] bg-[#18181c]/95 backdrop-blur-md border border-white/10 rounded-xl shadow-2xl text-[13px] text-white/90 flex flex-col select-none">
     <!-- Header -->
     <div class="flex items-center border-b border-white/[0.08] px-3 py-2">
-      <span class="font-medium text-xs">Playlist</span>
+      <span class="font-medium text-xs">{t().playlist}</span>
       <span class="text-white/30 text-[11px] ml-2">{items.length} items</span>
       <div class="flex-1"></div>
       <button class="ctrl-btn w-6 h-6 text-[11px] hover:text-red-400" title="Clear" onclick={handleClear}>🗑</button>
@@ -105,7 +106,7 @@
       {/each}
 
       {#if items.length === 0}
-        <div class="px-3 py-8 text-center text-white/30 text-xs">Empty playlist</div>
+        <div class="px-3 py-8 text-center text-white/30 text-xs">{t().emptyPlaylist}</div>
       {/if}
     </div>
 
@@ -114,12 +115,12 @@
       <button
         class="flex-1 flex items-center justify-center gap-1 px-3 py-2 hover:bg-white/[0.08] text-white/60 hover:text-white/90"
         onclick={handleAddFiles}
-      >+ Files</button>
+      >{t().addFiles}</button>
       <div class="w-px bg-white/[0.08]"></div>
       <button
         class="flex-1 flex items-center justify-center gap-1 px-3 py-2 hover:bg-white/[0.08] text-white/60 hover:text-white/90"
         onclick={handleAddFolder}
-      >+ Folder</button>
+      >{t().addFolder}</button>
     </div>
   </div>
 {/if}

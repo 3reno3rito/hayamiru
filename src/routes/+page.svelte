@@ -3,6 +3,7 @@
   import { open } from "@tauri-apps/plugin-dialog";
   import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
   import { player } from "$lib/stores/player.svelte";
+  import { t } from "$lib/i18n/index.svelte";
   import {
     initPlayer, openFile, togglePause, seekRelative, setVolume, setSpeed, getPlaybackState,
     screenshot, frameStep, frameBackStep, toggleAbLoop,
@@ -188,7 +189,7 @@
 >
   {#if dragOver}
     <div class="absolute inset-0 z-[90] flex items-center justify-center bg-black/60 border-2 border-dashed border-white/30 pointer-events-none">
-      <p class="text-white/60 text-lg">Drop file to play</p>
+      <p class="text-white/60 text-sm">{t().dropToPlay}</p>
     </div>
   {/if}
 
@@ -200,9 +201,9 @@
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
           d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
       </svg>
-      <p class="text-sm mb-1">Hayamiru (速観)</p>
+      <p class="text-sm mb-1">{t().welcomeTitle}</p>
       <p class="text-xs text-white/25">
-        Drop a file here or press <kbd class="px-1.5 py-0.5 bg-white/10 rounded text-white/40">Ctrl+O</kbd> to open
+        {t().welcomeSubtitle} <kbd class="px-1.5 py-0.5 bg-white/10 rounded text-white/40">Ctrl+O</kbd> {t().toOpen}
       </p>
     </div>
   {/if}
