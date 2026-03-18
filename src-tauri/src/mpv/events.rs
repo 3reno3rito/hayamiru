@@ -7,6 +7,7 @@ use tracing::{debug, info, warn};
 
 use super::player::MpvPlayer;
 use super::types::*;
+use crate::state::take_pending_resume;
 
 /// Spawn a named background thread that polls mpv events and emits them
 /// as typed Tauri events to the frontend.
@@ -33,6 +34,14 @@ fn run_loop(mpv: &MpvPlayer, app: &tauri::AppHandle) {
                 if let Err(e) = handle_property_change(evt, app) {
                     warn!(error = %e, "Failed to handle property change");
                 }
+            }
+
+            MPV_EVENT_FILE_LOADED => {
+                debug!("File loaded");
+                if let Some(pos) = take_pending_resume() {
+                    let _ = mpv.command(&["seek", &pos.to_string(), "absolute"]);
+                }
+                let _ = app.emit("mpv:file-loaded", ());
             }
 
             MPV_EVENT_END_FILE => {

@@ -6,7 +6,7 @@ use crate::mpv::player::MpvPlayer;
 use crate::mpv::types::*;
 use crate::services::playback::{PlaybackService, PlaybackState};
 use crate::services::playlist::PlaylistService;
-use crate::state::{AppState, MpvState};
+use crate::state::{set_pending_resume, AppState, MpvState};
 
 #[tauri::command]
 pub async fn init_player(
@@ -83,8 +83,13 @@ pub async fn open_file(
         }
     })?;
 
-    // Load file + populate playlist with sibling media files (resume included)
-    PlaylistService::open_with_siblings(mpv, &path, resume)?;
+    // Queue resume position (consumed by event loop on FILE_LOADED)
+    if let Some(pos) = resume {
+        set_pending_resume(pos);
+    }
+
+    // Load file + populate playlist with sibling media files
+    PlaylistService::open_with_siblings(mpv, &path)?;
 
     // Update state + recent files
     let title = std::path::Path::new(&path)

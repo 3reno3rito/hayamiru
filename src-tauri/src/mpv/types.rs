@@ -9,6 +9,7 @@ pub const MPV_FORMAT_DOUBLE: c_int = 5;
 
 /// mpv event identifiers.
 pub const MPV_EVENT_SHUTDOWN: c_int = 1;
+pub const MPV_EVENT_FILE_LOADED: c_int = 8;
 pub const MPV_EVENT_END_FILE: c_int = 7;
 pub const MPV_EVENT_PROPERTY_CHANGE: c_int = 16;
 

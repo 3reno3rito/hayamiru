@@ -1,8 +1,22 @@
+use std::sync::atomic::{AtomicI64, Ordering};
 use std::sync::{Arc, Mutex, OnceLock};
 
 use crate::error::{AppError, MpvError};
 use crate::mpv::player::MpvPlayer;
 use crate::services::settings::PlayerSettings;
+
+/// Pending resume position (stored as millseconds × 1000 to avoid f64 atomics).
+/// Set by open_file, consumed by event loop on FILE_LOADED.
+static PENDING_RESUME: AtomicI64 = AtomicI64::new(-1);
+
+pub fn set_pending_resume(pos: f64) {
+    PENDING_RESUME.store((pos * 1000.0) as i64, Ordering::Relaxed);
+}
+
+pub fn take_pending_resume() -> Option<f64> {
+    let v = PENDING_RESUME.swap(-1, Ordering::Relaxed);
+    if v >= 0 { Some(v as f64 / 1000.0) } else { None }
+}
 
 /// Lock-free access to the mpv player instance.
 pub struct MpvState(OnceLock<Arc<MpvPlayer>>);

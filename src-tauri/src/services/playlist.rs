@@ -58,36 +58,34 @@ impl PlaylistService {
     pub fn open_with_siblings(
         mpv: &MpvPlayer,
         path: &str,
-        resume_pos: Option<f64>,
     ) -> Result<(), MpvError> {
         let target = Path::new(path);
+        let target_name = target.file_name();
+
+        // Scan and sort siblings
         let siblings = match target.parent() {
             Some(parent) => scan_media_folder(&parent.to_string_lossy()),
-            None => vec![path.to_string()],
+            None => vec![],
         };
 
-        let target_str = target.to_string_lossy().to_string();
-        let target_idx = siblings
-            .iter()
-            .position(|s| *s == target_str)
-            .unwrap_or(0);
-
-        // Order: target first, then remaining in natural order
-        let mut ordered = Vec::with_capacity(siblings.len());
-        ordered.extend_from_slice(&siblings[target_idx..]);
-        ordered.extend_from_slice(&siblings[..target_idx]);
-
-        // Load first file (with optional resume position)
-        let first = &ordered[0];
-        if let Some(pos) = resume_pos {
-            mpv.command(&["loadfile", first, "replace", &format!("start={pos}")])?;
-        } else {
-            mpv.command(&["loadfile", first])?;
+        if siblings.is_empty() {
+            // No siblings found — just load the file directly
+            return mpv.command(&["loadfile", path, "replace"]);
         }
 
-        // Append the rest
-        for file in &ordered[1..] {
+        // Find target index in sorted list
+        let target_idx = siblings
+            .iter()
+            .position(|s| Path::new(s).file_name() == target_name)
+            .unwrap_or(0);
+
+        // Load all in sorted order, then jump to target
+        mpv.command(&["loadfile", &siblings[0], "replace"])?;
+        for file in &siblings[1..] {
             mpv.command(&["loadfile", file, "append"])?;
+        }
+        if target_idx > 0 {
+            mpv.set::<&str>("playlist-pos", &target_idx.to_string())?;
         }
 
         Ok(())
@@ -145,7 +143,7 @@ fn scan_media_folder(dir: &str) -> Vec<String> {
             }
         })
         .collect();
-    files.sort_by(|a, b| natural_sort_key(a).cmp(&natural_sort_key(b)));
+    files.sort_by_key(|f| natural_sort_key(f));
     files
 }
 
