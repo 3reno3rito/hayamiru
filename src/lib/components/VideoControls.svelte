@@ -53,7 +53,7 @@
     <div class="mb-2"><SeekBar /></div>
 
     <div class="flex items-center gap-1">
-      <button onclick={() => togglePause()} class="ctrl-btn w-9 h-9" title={player.playing ? `${t().pause} (Space)` : `${t().play} (Space)`}>
+      <button onclick={() => { if (player.duration > 0) player.playing = !player.playing; togglePause(); }} class="ctrl-btn w-9 h-9" title={player.playing ? `${t().pause} (Space)` : `${t().play} (Space)`}>
         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
           {#if player.playing}
             <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />

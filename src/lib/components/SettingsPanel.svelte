@@ -1,7 +1,9 @@
 <script lang="ts">
   import { setBrightness, setContrast, setSaturation, setVideoZoom, resetVideoZoomPan } from "$lib/bindings/video";
   import { setAudioNormalization, setAudioEqualizer, resetAudioEqualizer } from "$lib/bindings/audio-fx";
+  import { getSettings, saveSettings, type PlayerSettings } from "$lib/bindings/settings";
   import { t, setLocale, getLocale } from "$lib/i18n/index.svelte";
+  import { subStyle, subFonts } from "$lib/stores/subtitle-style.svelte";
 
   let { visible = $bindable(false) }: { visible: boolean } = $props();
   let tab = $state<"general" | "video" | "audio" | "subtitles">("general");
@@ -11,6 +13,33 @@
   let speed = $state(1.0);
   let rememberPosition = $state(true);
   let autoPlay = $state(true);
+
+  let cachedSettings: PlayerSettings | null = null;
+
+  // Load settings when panel opens
+  $effect(() => {
+    if (visible) {
+      getSettings().then((s) => {
+        cachedSettings = s;
+        volume = s.volume;
+        speed = s.speed;
+        rememberPosition = s.remember_position;
+        autoPlay = s.auto_play;
+        language = s.language;
+        setLocale(s.language);
+      }).catch(() => {});
+    }
+  });
+
+  function persistSettings() {
+    if (!cachedSettings) return;
+    cachedSettings.volume = volume;
+    cachedSettings.speed = speed;
+    cachedSettings.remember_position = rememberPosition;
+    cachedSettings.auto_play = autoPlay;
+    cachedSettings.language = language;
+    saveSettings(cachedSettings).catch(() => {});
+  }
 
   // Video
   let brightness = $state(0);
@@ -27,15 +56,6 @@
   };
   let eqBands = $state([0,0,0,0,0]);
 
-  // Subtitles
-  let subFont = $state("Segoe UI");
-  let subSize = $state(55);
-  let subColor = $state("#FFFFFF");
-  let subBorderColor = $state("#000000");
-  let subBorderSize = $state(3);
-  let subPosition = $state(100);
-
-  const fonts = ["Segoe UI","Arial","Verdana","Tahoma","Calibri","Consolas","Times New Roman","Georgia","Noto Sans"];
   const speeds = [0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 3.0, 4.0];
 
   // Language
@@ -77,8 +97,7 @@
     volume = 100; speed = 1.0; rememberPosition = true; autoPlay = true; language = "en"; setLocale("en");
     resetVideo();
     normEnabled = false; resetEq(); setAudioNormalization(false);
-    subFont = "Segoe UI"; subSize = 55; subColor = "#FFFFFF";
-    subBorderColor = "#000000"; subBorderSize = 3; subPosition = 100;
+    subStyle.reset();
   }
 
   function close() { visible = false; }
@@ -117,25 +136,25 @@
           <div class="s-group">
             <div class="s-row">
               <span>{t().language}</span>
-              <Select items={Object.keys(languages)} value={language} label={(code) => languages[code]} onchange={(code) => { language = code; setLocale(code); }} />
+              <Select items={Object.keys(languages)} value={language} label={(code) => languages[code]} onchange={(code) => { language = code; setLocale(code); persistSettings(); }} />
             </div>
           </div>
           <div class="s-group">
             <label class="s-row">
               <span>{t().defaultVolume}</span>
               <div class="flex items-center gap-2">
-                <input type="range" min="0" max="100" bind:value={volume} class="s-range flex-1" />
+                <input type="range" min="0" max="100" bind:value={volume} oninput={persistSettings} class="s-range flex-1" />
                 <span class="text-white/50 w-8 text-right">{volume}%</span>
               </div>
             </label>
             <div class="s-row">
               <span>{t().defaultSpeed}</span>
-              <Select items={speeds} value={speed} label={(s) => `${s}x`} onchange={(s) => speed = s} />
+              <Select items={speeds} value={speed} label={(s) => `${s}x`} onchange={(s) => { speed = s; persistSettings(); }} />
             </div>
           </div>
           <div class="s-group">
-            <label class="s-toggle"><span>{t().rememberPosition}</span><input type="checkbox" bind:checked={rememberPosition} /></label>
-            <label class="s-toggle"><span>{t().autoPlay}</span><input type="checkbox" bind:checked={autoPlay} /></label>
+            <label class="s-toggle"><span>{t().rememberPosition}</span><input type="checkbox" bind:checked={rememberPosition} onchange={persistSettings} /></label>
+            <label class="s-toggle"><span>{t().autoPlay}</span><input type="checkbox" bind:checked={autoPlay} onchange={persistSettings} /></label>
           </div>
 
         {:else if tab === "video"}
@@ -195,35 +214,35 @@
           <div class="s-group">
             <div class="s-row">
               <span>{t().font}</span>
-              <Select items={fonts} value={subFont} itemStyle={(f) => `font-family:'${f}'`} onchange={(f) => subFont = f} />
+              <Select items={subFonts} value={subStyle.font} itemStyle={(f) => `font-family:'${f}'`} onchange={(f) => { subStyle.font = f; subStyle.apply(); }} />
             </div>
             <label class="s-row">
               <span>{t().size}</span>
               <div class="flex items-center gap-2">
-                <input type="range" min="10" max="100" bind:value={subSize} class="s-range flex-1" />
-                <span class="text-white/50 w-8 text-right">{subSize}</span>
+                <input type="range" min="10" max="100" bind:value={subStyle.size} oninput={() => subStyle.apply()} class="s-range flex-1" />
+                <span class="text-white/50 w-8 text-right">{subStyle.size}</span>
               </div>
             </label>
             <div class="flex items-center justify-between py-1">
               <span>{t().textColor}</span>
-              <input type="color" bind:value={subColor} class="s-color" />
+              <input type="color" bind:value={subStyle.color} oninput={() => subStyle.apply()} class="s-color" />
             </div>
             <div class="flex items-center justify-between py-1">
               <span>{t().borderColor}</span>
-              <input type="color" bind:value={subBorderColor} class="s-color" />
+              <input type="color" bind:value={subStyle.borderColor} oninput={() => subStyle.apply()} class="s-color" />
             </div>
             <label class="s-row">
               <span>{t().borderSize}</span>
               <div class="flex items-center gap-2">
-                <input type="range" min="0" max="5" step="0.5" bind:value={subBorderSize} class="s-range flex-1" />
-                <span class="text-white/50 w-8 text-right">{subBorderSize}</span>
+                <input type="range" min="0" max="5" step="0.5" bind:value={subStyle.borderSize} oninput={() => subStyle.apply()} class="s-range flex-1" />
+                <span class="text-white/50 w-8 text-right">{subStyle.borderSize}</span>
               </div>
             </label>
             <label class="s-row">
               <span>{t().position}</span>
               <div class="flex items-center gap-2">
-                <input type="range" min="0" max="100" bind:value={subPosition} class="s-range flex-1" />
-                <span class="text-white/50 w-8 text-right">{subPosition}%</span>
+                <input type="range" min="0" max="100" bind:value={subStyle.position} oninput={() => subStyle.apply()} class="s-range flex-1" />
+                <span class="text-white/50 w-8 text-right">{subStyle.position}%</span>
               </div>
             </label>
           </div>

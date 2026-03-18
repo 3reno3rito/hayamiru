@@ -1,8 +1,9 @@
 <script lang="ts">
-  import { getTracks, selectSubtitle, loadSubtitle, toggleSubtitles, setSubtitleDelay, setSubStyle, type TrackInfo, type SubStyle } from "$lib/bindings/tracks";
+  import { getTracks, selectSubtitle, loadSubtitle, toggleSubtitles, setSubtitleDelay, type TrackInfo } from "$lib/bindings/tracks";
   import { open } from "@tauri-apps/plugin-dialog";
   import Select from "./Select.svelte";
   import { t } from "$lib/i18n/index.svelte";
+  import { subStyle, subFonts } from "$lib/stores/subtitle-style.svelte";
 
   let { visible = $bindable(false) }: { visible: boolean } = $props();
 
@@ -11,28 +12,6 @@
   let subVisible = $state(true);
   let page = $state<"main" | "style">("main");
 
-  // Style state
-  const fonts = ["Tahoma", "Arial", "Segoe UI", "Verdana", "Trebuchet MS", "Calibri", "Consolas", "Impact", "Georgia"];
-  let font = $state("Tahoma");
-  let size = $state(55);
-  let color = $state("#ffffff");
-  let borderColor = $state("#000000");
-  let borderSize = $state(3);
-  let position = $state(100);
-
-  let debounceTimer: ReturnType<typeof setTimeout> | null = null;
-
-  function applyStyle() {
-    if (debounceTimer) clearTimeout(debounceTimer);
-    debounceTimer = setTimeout(() => {
-      setSubStyle({ font, size, color, border_color: borderColor, border_size: borderSize, position });
-    }, 150);
-  }
-
-  function resetStyle() {
-    font = "Tahoma"; size = 55; color = "#ffffff"; borderColor = "#000000"; borderSize = 3; position = 100;
-    applyStyle();
-  }
 
   async function refresh() {
     try {
@@ -161,49 +140,49 @@
         <button class="ctrl-btn w-6 h-6 text-xs mr-2 hover:bg-white/10 rounded" onclick={() => page = "main"}>←</button>
         <span class="font-medium text-xs">{t().style}</span>
         <div class="flex-1"></div>
-        <button class="text-xs text-white/40 hover:text-white/70" onclick={resetStyle}>{t().reset}</button>
+        <button class="text-xs text-white/40 hover:text-white/70" onclick={() => subStyle.reset()}>{t().reset}</button>
       </div>
 
       <!-- Style controls -->
       <div class="flex-1 overflow-y-auto p-3 space-y-3">
         <div>
           <span class="text-white/50 text-xs block mb-1">{t().font}</span>
-          <Select items={fonts} value={font} itemStyle={(f) => `font-family:'${f}'`} onchange={(f) => { font = f; applyStyle(); }} />
+          <Select items={subFonts} value={subStyle.font} itemStyle={(f) => `font-family:'${f}'`} onchange={(f) => { subStyle.font = f; subStyle.apply(); }} />
         </div>
 
         <div>
           <div class="flex items-center justify-between mb-1">
             <span class="text-white/50 text-xs">{t().size}</span>
-            <span class="text-white/50 text-xs tabular-nums">{size}</span>
+            <span class="text-white/50 text-xs tabular-nums">{subStyle.size}</span>
           </div>
-          <input type="range" min="20" max="100" bind:value={size} oninput={applyStyle} class="s-range w-full" />
+          <input type="range" min="20" max="100" bind:value={subStyle.size} oninput={() => subStyle.apply()} class="s-range w-full" />
         </div>
 
         <div class="flex items-center gap-4">
           <div class="flex items-center gap-2">
             <span class="text-white/50 text-xs">{t().text}</span>
-            <input type="color" bind:value={color} oninput={applyStyle} class="s-color" />
+            <input type="color" bind:value={subStyle.color} oninput={() => subStyle.apply()} class="s-color" />
           </div>
           <div class="flex items-center gap-2">
             <span class="text-white/50 text-xs">{t().border}</span>
-            <input type="color" bind:value={borderColor} oninput={applyStyle} class="s-color" />
+            <input type="color" bind:value={subStyle.borderColor} oninput={() => subStyle.apply()} class="s-color" />
           </div>
         </div>
 
         <div>
           <div class="flex items-center justify-between mb-1">
             <span class="text-white/50 text-xs">{t().borderSize}</span>
-            <span class="text-white/50 text-xs tabular-nums">{borderSize}</span>
+            <span class="text-white/50 text-xs tabular-nums">{subStyle.borderSize}</span>
           </div>
-          <input type="range" min="0" max="10" bind:value={borderSize} oninput={applyStyle} class="s-range w-full" />
+          <input type="range" min="0" max="10" bind:value={subStyle.borderSize} oninput={() => subStyle.apply()} class="s-range w-full" />
         </div>
 
         <div>
           <div class="flex items-center justify-between mb-1">
             <span class="text-white/50 text-xs">{t().position}</span>
-            <span class="text-white/50 text-xs tabular-nums">{position}%</span>
+            <span class="text-white/50 text-xs tabular-nums">{subStyle.position}%</span>
           </div>
-          <input type="range" min="0" max="100" bind:value={position} oninput={applyStyle} class="s-range w-full" />
+          <input type="range" min="0" max="100" bind:value={subStyle.position} oninput={() => subStyle.apply()} class="s-range w-full" />
         </div>
       </div>
     {/if}

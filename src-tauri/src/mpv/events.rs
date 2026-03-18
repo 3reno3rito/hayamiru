@@ -24,7 +24,7 @@ pub fn start_event_loop(mpv: Arc<MpvPlayer>, app: tauri::AppHandle) {
 
 fn run_loop(mpv: &MpvPlayer, app: &tauri::AppHandle) {
     loop {
-        let evt = mpv.wait_event(0.5);
+        let evt = mpv.wait_event(0.05);
 
         match evt.event_id {
             MPV_EVENT_PROPERTY_CHANGE => {

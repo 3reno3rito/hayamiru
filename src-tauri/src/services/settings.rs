@@ -9,8 +9,37 @@ pub struct PlayerSettings {
     pub speed: f64,
     pub remember_position: bool,
     pub auto_play: bool,
+    #[serde(default = "default_lang")]
+    pub language: String,
     #[serde(default)]
     pub recent_files: Vec<RecentFile>,
+    #[serde(default)]
+    pub subtitle_style: SubtitleStyleSettings,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SubtitleStyleSettings {
+    pub font: String,
+    pub size: u32,
+    pub color: String,
+    pub border_color: String,
+    pub border_size: u32,
+    pub position: u32,
+}
+
+fn default_lang() -> String { "en".into() }
+
+impl Default for SubtitleStyleSettings {
+    fn default() -> Self {
+        Self {
+            font: "Segoe UI".into(),
+            size: 55,
+            color: "#ffffff".into(),
+            border_color: "#000000".into(),
+            border_size: 3,
+            position: 100,
+        }
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -28,7 +57,9 @@ impl Default for PlayerSettings {
             speed: 1.0,
             remember_position: true,
             auto_play: true,
+            language: "en".into(),
             recent_files: Vec::new(),
+            subtitle_style: SubtitleStyleSettings::default(),
         }
     }
 }

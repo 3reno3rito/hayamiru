@@ -3,7 +3,9 @@
   import { open } from "@tauri-apps/plugin-dialog";
   import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
   import { player } from "$lib/stores/player.svelte";
-  import { t } from "$lib/i18n/index.svelte";
+  import { subStyle } from "$lib/stores/subtitle-style.svelte";
+  import { t, setLocale } from "$lib/i18n/index.svelte";
+  import { getSettings } from "$lib/bindings/settings";
   import {
     initPlayer, openFile, togglePause, seekRelative, setVolume, setSpeed, getPlaybackState,
     screenshot, frameStep, frameBackStep, toggleAbLoop,
@@ -44,21 +46,26 @@
     const cleanups: Array<Promise<() => void> | (() => void)> = [];
 
     initPlayer().catch(() => {});
+    getSettings().then((s) => {
+      setLocale(s.language);
+      subStyle.loadFrom(s);
+    }).catch(() => {});
 
     // Event-driven state updates
     cleanups.push(listen<number>("mpv:time-pos", (e) => { player.currentTime = e.payload; }));
     cleanups.push(listen<number>("mpv:duration", (e) => { player.duration = e.payload; }));
-    cleanups.push(listen<boolean>("mpv:pause", (e) => { player.playing = !e.payload; }));
+    cleanups.push(listen<boolean>("mpv:pause", (e) => { if (player.duration > 0) player.playing = !e.payload; }));
     cleanups.push(listen<number>("mpv:volume", (e) => { player.volume = e.payload; }));
     cleanups.push(listen<string>("mpv:media-title", (e) => { player.title = e.payload; }));
     cleanups.push(listen<void>("mpv:end-file", () => { player.playing = false; }));
+    cleanups.push(listen<void>("mpv:file-loaded", () => { subStyle.apply(); }));
 
     // Polling fallback
     const poll = setInterval(() => {
       getPlaybackState().then((s) => {
         player.currentTime = s.time_pos;
         player.duration = s.duration;
-        player.playing = !s.paused;
+        player.playing = s.duration > 0 && !s.paused;
         player.title = s.title;
         player.volume = s.volume;
       }).catch(() => {});
@@ -116,7 +123,7 @@
     if (e.target instanceof HTMLInputElement) return;
 
     switch (e.key) {
-      case " ": e.preventDefault(); togglePause(); break;
+      case " ": e.preventDefault(); if (player.duration > 0) player.playing = !player.playing; togglePause(); break;
       case "f": case "F": case "F11": e.preventDefault(); toggleFullscreen(); break;
       case "ArrowRight": seekRelative(e.shiftKey ? 30 : 5); break;
       case "ArrowLeft": seekRelative(e.shiftKey ? -30 : -5); break;
