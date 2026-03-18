@@ -59,6 +59,7 @@ impl MpvPlayer {
         player.set::<&str>("input-default-bindings", "no")?;
         player.set::<&str>("input-vo-keyboard", "no")?;
         player.set::<&str>("osc", "no")?;
+        player.set::<&str>("sub-auto", "fuzzy")?;
 
         info!("mpv instance created and configured");
         Ok(player)
