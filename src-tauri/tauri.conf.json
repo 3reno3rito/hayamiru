@@ -52,6 +52,7 @@
       }
     ],
     "windows": {
+      "webviewInstallMode": { "type": "embedBootstrapper" },
       "nsis": {
         "installerIcon": "icons/icon.ico",
         "installMode": "perMachine"
