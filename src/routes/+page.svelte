@@ -57,6 +57,11 @@
     cleanups.push(listen<void>("mpv:end-file", () => { player.playing = false; }));
     cleanups.push(listen<void>("mpv:file-loaded", () => { settings.applySubStyle(); }));
 
+    // Open files from CLI args ("Open with" from Explorer)
+    cleanups.push(listen<string[]>("open-files", (e) => {
+      if (e.payload.length > 0) { fileLoaded = true; openFile(e.payload[0]); }
+    }));
+
     // Polling fallback
     const poll = setInterval(() => {
       getPlaybackState().then((s) => {

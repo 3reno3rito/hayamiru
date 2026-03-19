@@ -4,6 +4,7 @@ mod mpv;
 mod services;
 mod state;
 
+use tauri::Emitter;
 use tracing_subscriber::EnvFilter;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -18,6 +19,19 @@ pub fn run() {
         .plugin(tauri_plugin_dialog::init())
         .manage(state::MpvState::new())
         .manage(state::AppState::new())
+        .setup(|app| {
+            let args: Vec<String> = std::env::args().skip(1)
+                .filter(|a| !a.starts_with('-') && std::path::Path::new(a).exists())
+                .collect();
+            if !args.is_empty() {
+                let handle = app.handle().clone();
+                tauri::async_runtime::spawn(async move {
+                    tokio::time::sleep(std::time::Duration::from_millis(500)).await;
+                    let _ = handle.emit("open-files", args);
+                });
+            }
+            Ok(())
+        })
         .invoke_handler(tauri::generate_handler![
             // Playback
             commands::playback::init_player,
