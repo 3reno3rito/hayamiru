@@ -37,7 +37,7 @@
   let tracks = $state<TrackInfo[]>([]);
   let delay = $state(0);
   let subVisible = $state(true);
-  let page = $state<"main" | "style" | "translate">("main");
+  let page = $state<"main" | "style">("main");
 
 
   async function refresh() {
@@ -126,11 +126,35 @@
       <!-- Load external -->
       <div class="border-t border-white/[0.08]">
         <button
-          class="w-full flex items-center justify-center gap-1.5 px-3 py-2 hover:bg-white/[0.08] text-white/60 hover:text-white/90"
+          class="w-full flex items-center gap-2 px-3 py-2 hover:bg-white/[0.08] text-white/60 hover:text-white/90"
           onclick={handleLoadExternal}
         >
+          <svg class="w-3.5 h-3.5 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
           {t().loadExternalFile}
         </button>
+      </div>
+
+      <!-- Translate -->
+      <div class="border-t border-white/[0.08] px-3 py-2.5">
+        {#if translating}
+          <div class="space-y-1">
+            <div class="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
+              <div class="h-full bg-blue-500 rounded-full transition-all" style="width: {translateTotal > 0 ? (translateProgress / translateTotal) * 100 : 0}%"></div>
+            </div>
+            <span class="text-white/30 text-xs">{translateProgress}/{translateTotal}</span>
+          </div>
+        {:else}
+          <span class="text-white/40 text-xs block mb-1.5">{t().translate || "Translate"}</span>
+          <div class="flex items-center gap-1.5">
+            <div class="flex-1"><Select items={translateLangs.map(l => l.name)} value={translateLangs.find(l => l.code === translateLang)?.name || "Português"} onchange={(name) => { const l = translateLangs.find(x => x.name === name); if (l) translateLang = l.code; }} /></div>
+            <button class="ctrl-btn w-[30px] h-[30px] bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 rounded flex items-center justify-center" onclick={handleTranslate} title="Translate">
+              <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            </button>
+          </div>
+        {/if}
+        {#if translateError}
+          <span class="text-red-400 text-xs truncate block mt-1" title={translateError}>{translateError}</span>
+        {/if}
       </div>
 
       <!-- Controls -->
@@ -153,52 +177,12 @@
         </div>
       </div>
 
-      <!-- Translate nav -->
-      <div class="border-t border-white/[0.08]">
-        <button class="w-full flex items-center justify-between px-3 py-2 hover:bg-white/[0.08] text-white/60 hover:text-white/90" onclick={() => page = "translate"}>
-          <span>{t().translate || "Translate"}</span>
-          <svg class="w-3.5 h-3.5 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-        </button>
-      </div>
-
       <!-- Style nav -->
       <div class="border-t border-white/[0.08]">
         <button class="w-full flex items-center justify-between px-3 py-2 hover:bg-white/[0.08] text-white/60 hover:text-white/90" onclick={() => page = "style"}>
           <span>{t().style}</span>
           <svg class="w-3.5 h-3.5 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
         </button>
-      </div>
-
-    {:else if page === "translate"}
-      <!-- Translate header -->
-      <div class="flex items-center border-b border-white/[0.08] px-3 py-2">
-        <button class="ctrl-btn w-6 h-6 text-xs mr-2 hover:bg-white/10 rounded" onclick={() => page = "main"}>←</button>
-        <span class="font-medium text-xs">{t().translate || "Translate"}</span>
-      </div>
-
-      <!-- Translate controls -->
-      <div class="flex-1 overflow-y-auto p-3 space-y-3">
-        {#if translating}
-          <div class="space-y-2">
-            <div class="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
-              <div class="h-full bg-blue-500 rounded-full transition-all" style="width: {translateTotal > 0 ? (translateProgress / translateTotal) * 100 : 0}%"></div>
-            </div>
-            <span class="text-white/30 text-xs">{translateProgress}/{translateTotal}</span>
-          </div>
-        {:else}
-          <button class="w-full py-2 rounded text-xs bg-blue-500/20 text-blue-400 hover:bg-blue-500/30" onclick={handleTranslate}>
-            {t().translateNow || "Translate"}
-          </button>
-        {/if}
-
-        {#if translateError}
-          <span class="text-red-400 text-xs truncate block" title={translateError}>{translateError}</span>
-        {/if}
-
-        <div>
-          <span class="text-white/50 text-xs block mb-1">{t().to || "To"}</span>
-          <Select items={translateLangs.map(l => l.name)} value={translateLangs.find(l => l.code === translateLang)?.name || "Português"} onchange={(name) => { const l = translateLangs.find(x => x.name === name); if (l) translateLang = l.code; }} />
-        </div>
       </div>
 
     {:else if page === "style"}
