@@ -77,6 +77,8 @@ pub fn run() {
             commands::audio_fx::reset_audio_equalizer,
             // Media Info
             commands::media_info::get_media_info,
+            // Translate
+            commands::translate::translate_subtitles,
             // Window
             commands::window::toggle_fullscreen,
             commands::window::set_always_on_top,

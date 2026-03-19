@@ -3,5 +3,7 @@ pub mod media_info;
 pub mod playback;
 pub mod playlist;
 pub mod settings;
+pub mod subtitle_extract;
 pub mod tracks;
+pub mod translate;
 pub mod video;

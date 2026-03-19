@@ -10,6 +10,9 @@ pub struct TrackInfo {
     pub title: String,
     pub lang: String,
     pub selected: bool,
+    pub external: bool,
+    pub external_filename: String,
+    pub codec: String,
 }
 
 pub struct TracksService;
@@ -31,6 +34,9 @@ impl TracksService {
                     title: mpv.get_property_string(&format!("{p}/title")).unwrap_or_default(),
                     lang: mpv.get_property_string(&format!("{p}/lang")).unwrap_or_default(),
                     selected: mpv.get_property_string(&format!("{p}/selected")).ok().as_deref() == Some("yes"),
+                    external: mpv.get_property_string(&format!("{p}/external")).ok().as_deref() == Some("yes"),
+                    external_filename: mpv.get_property_string(&format!("{p}/external-filename")).unwrap_or_default(),
+                    codec: mpv.get_property_string(&format!("{p}/codec")).unwrap_or_default(),
                 })
             })
             .collect()

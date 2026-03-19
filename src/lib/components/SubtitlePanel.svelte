@@ -1,5 +1,7 @@
 <script lang="ts">
   import { getTracks, selectSubtitle, loadSubtitle, toggleSubtitles, setSubtitleDelay, type TrackInfo } from "$lib/bindings/tracks";
+  import { translateSubtitles } from "$lib/bindings/translate";
+  import { listen } from "@tauri-apps/api/event";
   import { open } from "@tauri-apps/plugin-dialog";
   import Select from "./Select.svelte";
   import { t } from "$lib/i18n/index.svelte";
@@ -7,10 +9,35 @@
 
   let { visible = $bindable(false) }: { visible: boolean } = $props();
 
+  let translateLang = $state("pt");
+  let translating = $state(false);
+  let translateProgress = $state(0);
+  let translateTotal = $state(0);
+  let translateError = $state("");
+
+  const translateLangs = [
+    { code: "pt", name: "Português" }, { code: "en", name: "English" }, { code: "es", name: "Español" },
+    { code: "fr", name: "Français" }, { code: "de", name: "Deutsch" }, { code: "it", name: "Italiano" },
+    { code: "ja", name: "日本語" }, { code: "ko", name: "한국어" }, { code: "zh", name: "中文" },
+    { code: "ru", name: "Русский" }, { code: "ar", name: "العربية" }, { code: "hi", name: "हिन्दी" },
+  ];
+
+  async function handleTranslate() {
+    translating = true; translateProgress = 0; translateTotal = 0; translateError = "";
+    const unlisten = await listen<{ current: number; total: number; done: boolean }>("translate:progress", (e) => {
+      translateProgress = e.payload.current;
+      translateTotal = e.payload.total;
+      if (e.payload.done) { translating = false; refresh(); }
+    });
+    try { await translateSubtitles(translateLang); }
+    catch (e: any) { translateError = String(e); translating = false; }
+    unlisten();
+  }
+
   let tracks = $state<TrackInfo[]>([]);
   let delay = $state(0);
   let subVisible = $state(true);
-  let page = $state<"main" | "style">("main");
+  let page = $state<"main" | "style" | "translate">("main");
 
 
   async function refresh() {
@@ -126,12 +153,52 @@
         </div>
       </div>
 
+      <!-- Translate nav -->
+      <div class="border-t border-white/[0.08]">
+        <button class="w-full flex items-center justify-between px-3 py-2 hover:bg-white/[0.08] text-white/60 hover:text-white/90" onclick={() => page = "translate"}>
+          <span>{t().translate || "Translate"}</span>
+          <svg class="w-3.5 h-3.5 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+
       <!-- Style nav -->
       <div class="border-t border-white/[0.08]">
         <button class="w-full flex items-center justify-between px-3 py-2 hover:bg-white/[0.08] text-white/60 hover:text-white/90" onclick={() => page = "style"}>
           <span>{t().style}</span>
           <svg class="w-3.5 h-3.5 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
         </button>
+      </div>
+
+    {:else if page === "translate"}
+      <!-- Translate header -->
+      <div class="flex items-center border-b border-white/[0.08] px-3 py-2">
+        <button class="ctrl-btn w-6 h-6 text-xs mr-2 hover:bg-white/10 rounded" onclick={() => page = "main"}>←</button>
+        <span class="font-medium text-xs">{t().translate || "Translate"}</span>
+      </div>
+
+      <!-- Translate controls -->
+      <div class="flex-1 overflow-y-auto p-3 space-y-3">
+        {#if translating}
+          <div class="space-y-2">
+            <div class="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
+              <div class="h-full bg-blue-500 rounded-full transition-all" style="width: {translateTotal > 0 ? (translateProgress / translateTotal) * 100 : 0}%"></div>
+            </div>
+            <span class="text-white/30 text-xs">{translateProgress}/{translateTotal}</span>
+          </div>
+        {:else}
+          <button class="w-full py-2 rounded text-xs bg-blue-500/20 text-blue-400 hover:bg-blue-500/30" onclick={handleTranslate}>
+            {t().translateNow || "Translate"}
+          </button>
+        {/if}
+
+        {#if translateError}
+          <span class="text-red-400 text-xs truncate block" title={translateError}>{translateError}</span>
+        {/if}
+
+        <div>
+          <span class="text-white/50 text-xs block mb-1">{t().to || "To"}</span>
+          <Select items={translateLangs.map(l => l.name)} value={translateLangs.find(l => l.code === translateLang)?.name || "Português"} onchange={(name) => { const l = translateLangs.find(x => x.name === name); if (l) translateLang = l.code; }} />
+        </div>
       </div>
 
     {:else if page === "style"}
