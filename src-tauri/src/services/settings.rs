@@ -15,7 +15,11 @@ pub struct PlayerSettings {
     pub recent_files: Vec<RecentFile>,
     #[serde(default)]
     pub subtitle_style: SubtitleStyleSettings,
+    #[serde(default = "default_translate_lang")]
+    pub translate_lang: String,
 }
+
+fn default_translate_lang() -> String { "pt".into() }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SubtitleStyleSettings {
@@ -60,6 +64,7 @@ impl Default for PlayerSettings {
             language: "en".into(),
             recent_files: Vec::new(),
             subtitle_style: SubtitleStyleSettings::default(),
+            translate_lang: default_translate_lang(),
         }
     }
 }

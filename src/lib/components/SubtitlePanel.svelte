@@ -5,11 +5,9 @@
   import { open } from "@tauri-apps/plugin-dialog";
   import Select from "./Select.svelte";
   import { t } from "$lib/i18n/index.svelte";
-  import { subStyle, subFonts } from "$lib/stores/subtitle-style.svelte";
+  import { settings, subFonts } from "$lib/stores/settings.svelte";
 
   let { visible = $bindable(false) }: { visible: boolean } = $props();
-
-  let translateLang = $state("pt");
   let translating = $state(false);
   let translateProgress = $state(0);
   let translateTotal = $state(0);
@@ -29,7 +27,7 @@
       translateTotal = e.payload.total;
       if (e.payload.done) { translating = false; refresh(); }
     });
-    try { await translateSubtitles(translateLang); }
+    try { await translateSubtitles(settings.translateLang); }
     catch (e: any) { translateError = String(e); translating = false; }
     unlisten();
   }
@@ -146,7 +144,7 @@
         {:else}
           <span class="text-white/40 text-xs block mb-1.5">{t().translate}</span>
           <div class="flex items-center gap-1.5">
-            <div class="flex-1"><Select items={translateLangs.map(l => l.name)} value={translateLangs.find(l => l.code === translateLang)?.name || "Português"} onchange={(name) => { const l = translateLangs.find(x => x.name === name); if (l) translateLang = l.code; }} /></div>
+            <div class="flex-1"><Select items={translateLangs.map(l => l.name)} value={translateLangs.find(l => l.code === settings.translateLang)?.name || "Português"} onchange={(name) => { const l = translateLangs.find(x => x.name === name); if (l) { settings.translateLang = l.code; settings.save(); } }} /></div>
             <button class="ctrl-btn w-[30px] h-[30px] bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 rounded flex items-center justify-center" onclick={handleTranslate} title="Translate">
               <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
             </button>
@@ -191,49 +189,49 @@
         <button class="ctrl-btn w-6 h-6 text-xs mr-2 hover:bg-white/10 rounded" onclick={() => page = "main"}>←</button>
         <span class="font-medium text-xs">{t().style}</span>
         <div class="flex-1"></div>
-        <button class="text-xs text-white/40 hover:text-white/70" onclick={() => subStyle.reset()}>{t().reset}</button>
+        <button class="text-xs text-white/40 hover:text-white/70" onclick={() => settings.resetSubStyle()}>{t().reset}</button>
       </div>
 
       <!-- Style controls -->
       <div class="flex-1 overflow-y-auto p-3 space-y-3">
         <div>
           <span class="text-white/50 text-xs block mb-1">{t().font}</span>
-          <Select items={subFonts} value={subStyle.font} itemStyle={(f) => `font-family:'${f}'`} onchange={(f) => { subStyle.font = f; subStyle.apply(); }} />
+          <Select items={subFonts} value={settings.subFont} itemStyle={(f) => `font-family:'${f}'`} onchange={(f) => { settings.subFont = f; settings.applySubStyle(); }} />
         </div>
 
         <div>
           <div class="flex items-center justify-between mb-1">
             <span class="text-white/50 text-xs">{t().size}</span>
-            <span class="text-white/50 text-xs tabular-nums">{subStyle.size}</span>
+            <span class="text-white/50 text-xs tabular-nums">{settings.subSize}</span>
           </div>
-          <input type="range" min="20" max="100" bind:value={subStyle.size} oninput={() => subStyle.apply()} class="s-range w-full" />
+          <input type="range" min="20" max="100" bind:value={settings.subSize} oninput={() => settings.applySubStyle()} class="s-range w-full" />
         </div>
 
         <div class="flex items-center gap-4">
           <div class="flex items-center gap-2">
             <span class="text-white/50 text-xs">{t().text}</span>
-            <input type="color" bind:value={subStyle.color} oninput={() => subStyle.apply()} class="s-color" />
+            <input type="color" bind:value={settings.subColor} oninput={() => settings.applySubStyle()} class="s-color" />
           </div>
           <div class="flex items-center gap-2">
             <span class="text-white/50 text-xs">{t().border}</span>
-            <input type="color" bind:value={subStyle.borderColor} oninput={() => subStyle.apply()} class="s-color" />
+            <input type="color" bind:value={settings.subBorderColor} oninput={() => settings.applySubStyle()} class="s-color" />
           </div>
         </div>
 
         <div>
           <div class="flex items-center justify-between mb-1">
             <span class="text-white/50 text-xs">{t().borderSize}</span>
-            <span class="text-white/50 text-xs tabular-nums">{subStyle.borderSize}</span>
+            <span class="text-white/50 text-xs tabular-nums">{settings.subBorderSize}</span>
           </div>
-          <input type="range" min="0" max="10" bind:value={subStyle.borderSize} oninput={() => subStyle.apply()} class="s-range w-full" />
+          <input type="range" min="0" max="10" bind:value={settings.subBorderSize} oninput={() => settings.applySubStyle()} class="s-range w-full" />
         </div>
 
         <div>
           <div class="flex items-center justify-between mb-1">
             <span class="text-white/50 text-xs">{t().position}</span>
-            <span class="text-white/50 text-xs tabular-nums">{subStyle.position}%</span>
+            <span class="text-white/50 text-xs tabular-nums">{settings.subPosition}%</span>
           </div>
-          <input type="range" min="0" max="100" bind:value={subStyle.position} oninput={() => subStyle.apply()} class="s-range w-full" />
+          <input type="range" min="0" max="100" bind:value={settings.subPosition} oninput={() => settings.applySubStyle()} class="s-range w-full" />
         </div>
       </div>
     {/if}

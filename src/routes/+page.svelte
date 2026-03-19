@@ -3,9 +3,8 @@
   import { open } from "@tauri-apps/plugin-dialog";
   import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
   import { player } from "$lib/stores/player.svelte";
-  import { subStyle } from "$lib/stores/subtitle-style.svelte";
-  import { t, setLocale } from "$lib/i18n/index.svelte";
-  import { getSettings } from "$lib/bindings/settings";
+  import { settings } from "$lib/stores/settings.svelte";
+  import { t } from "$lib/i18n/index.svelte";
   import {
     initPlayer, openFile, togglePause, seekRelative, setVolume, setSpeed, getPlaybackState,
     screenshot, frameStep, frameBackStep, toggleAbLoop,
@@ -46,10 +45,8 @@
     const cleanups: Array<Promise<() => void> | (() => void)> = [];
 
     initPlayer().catch(() => {});
-    getSettings().then((s) => {
-      setLocale(s.language);
-      subStyle.loadFrom(s);
-    }).catch(() => {});
+    settings.load();
+    getCurrentWebviewWindow().show();
 
     // Event-driven state updates
     cleanups.push(listen<number>("mpv:time-pos", (e) => { player.currentTime = e.payload; }));
@@ -58,7 +55,7 @@
     cleanups.push(listen<number>("mpv:volume", (e) => { player.volume = e.payload; }));
     cleanups.push(listen<string>("mpv:media-title", (e) => { player.title = e.payload; }));
     cleanups.push(listen<void>("mpv:end-file", () => { player.playing = false; }));
-    cleanups.push(listen<void>("mpv:file-loaded", () => { subStyle.apply(); }));
+    cleanups.push(listen<void>("mpv:file-loaded", () => { settings.applySubStyle(); }));
 
     // Polling fallback
     const poll = setInterval(() => {

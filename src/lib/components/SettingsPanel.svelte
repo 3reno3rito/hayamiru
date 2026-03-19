@@ -1,53 +1,20 @@
 <script lang="ts">
   import { setBrightness, setContrast, setSaturation, setVideoZoom, resetVideoZoomPan } from "$lib/bindings/video";
   import { setAudioNormalization, setAudioEqualizer, resetAudioEqualizer } from "$lib/bindings/audio-fx";
-  import { getSettings, saveSettings, type PlayerSettings } from "$lib/bindings/settings";
-  import { t, setLocale, getLocale } from "$lib/i18n/index.svelte";
-  import { subStyle, subFonts } from "$lib/stores/subtitle-style.svelte";
+  import { settings, subFonts } from "$lib/stores/settings.svelte";
+  import { t, setLocale } from "$lib/i18n/index.svelte";
+  import Select from "./Select.svelte";
 
   let { visible = $bindable(false) }: { visible: boolean } = $props();
   let tab = $state<"general" | "video" | "audio" | "subtitles">("general");
 
-  // General
-  let volume = $state(100);
-  let speed = $state(1.0);
-  let rememberPosition = $state(true);
-  let autoPlay = $state(true);
-
-  let cachedSettings: PlayerSettings | null = null;
-
-  // Load settings when panel opens
-  $effect(() => {
-    if (visible) {
-      getSettings().then((s) => {
-        cachedSettings = s;
-        volume = s.volume;
-        speed = s.speed;
-        rememberPosition = s.remember_position;
-        autoPlay = s.auto_play;
-        language = s.language;
-        setLocale(s.language);
-      }).catch(() => {});
-    }
-  });
-
-  function persistSettings() {
-    if (!cachedSettings) return;
-    cachedSettings.volume = volume;
-    cachedSettings.speed = speed;
-    cachedSettings.remember_position = rememberPosition;
-    cachedSettings.auto_play = autoPlay;
-    cachedSettings.language = language;
-    saveSettings(cachedSettings).catch(() => {});
-  }
-
-  // Video
+  // Video (local — not persisted, applied directly to mpv)
   let brightness = $state(0);
   let contrast = $state(0);
   let saturation = $state(0);
   let zoom = $state(0);
 
-  // Audio
+  // Audio (local)
   let normEnabled = $state(false);
   const eqLabels = ["60Hz", "230Hz", "910Hz", "3.6kHz", "14kHz"];
   const eqPresets: Record<string, number[]> = {
@@ -55,27 +22,13 @@
     "Vocal": [-2,0,4,4,0], "Rock": [4,2,-1,2,4],
   };
   let eqBands = $state([0,0,0,0,0]);
-
   const speeds = [0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 3.0, 4.0];
 
-  // Language
-  let language = $state(getLocale());
   const languages: Record<string, string> = {
-    "en": "English",
-    "pt": "Português",
-    "es": "Español",
-    "fr": "Français",
-    "de": "Deutsch",
-    "it": "Italiano",
-    "ja": "日本語",
-    "ko": "한국어",
-    "zh": "中文",
-    "ru": "Русский",
-    "ar": "العربية",
-    "hi": "हिन्दी",
+    "en": "English", "pt": "Português", "es": "Español", "fr": "Français",
+    "de": "Deutsch", "it": "Italiano", "ja": "日本語", "ko": "한국어",
+    "zh": "中文", "ru": "Русский", "ar": "العربية", "hi": "हिन्दी",
   };
-
-  import Select from "./Select.svelte";
 
   const tabs = [
     { id: "general" as const, get label() { return t().general; } },
@@ -84,34 +37,31 @@
     { id: "subtitles" as const, get label() { return t().subtitles; } },
   ];
 
-  function resetVideo() {
-    brightness = 0; contrast = 0; saturation = 0; zoom = 0;
-    setBrightness(0); setContrast(0); setSaturation(0); resetVideoZoomPan();
-  }
-
+  function setLang(code: string) { settings.language = code; setLocale(code); settings.save(); }
+  function resetVideo() { brightness = 0; contrast = 0; saturation = 0; zoom = 0; setBrightness(0); setContrast(0); setSaturation(0); resetVideoZoomPan(); }
   function applyEq() { setAudioEqualizer(eqBands).catch(() => {}); }
   function resetEq() { eqBands = [0,0,0,0,0]; resetAudioEqualizer(); }
   function setPreset(name: string) { eqBands = [...eqPresets[name]]; applyEq(); }
 
   function resetAll() {
-    volume = 100; speed = 1.0; rememberPosition = true; autoPlay = true; language = "en"; setLocale("en");
+    settings.resetAll();
     resetVideo();
     normEnabled = false; resetEq(); setAudioNormalization(false);
-    subStyle.reset();
   }
 
   function close() { visible = false; }
 </script>
 
 {#if visible}
-  <!-- svelte-ignore a11y_no_static_element_interactions -->
-  <div class="fixed inset-0 z-[90] bg-black/40" onclick={close}></div>
+  <button aria-label="Close" class="fixed inset-0 z-[90] w-full h-full bg-black/40 border-none cursor-default" onclick={close}></button>
 
-  <!-- svelte-ignore a11y_no_static_element_interactions -->
   <div
     data-panel
+    role="dialog"
+    tabindex="-1"
     class="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-[91] w-[520px] h-[400px] bg-[#18181c]/95 backdrop-blur-md border border-white/10 rounded-xl shadow-2xl text-[13px] text-white/90 flex flex-col select-none overflow-hidden"
     onclick={(e) => e.stopPropagation()}
+    onkeydown={(e) => e.key === "Escape" && close()}
   >
     <!-- Header -->
     <div class="flex items-center justify-between px-4 py-3 border-b border-white/[0.08]">
@@ -136,25 +86,25 @@
           <div class="s-group">
             <div class="s-row">
               <span>{t().language}</span>
-              <Select items={Object.keys(languages)} value={language} label={(code) => languages[code]} onchange={(code) => { language = code; setLocale(code); persistSettings(); }} />
+              <Select items={Object.keys(languages)} value={settings.language} label={(code) => languages[code]} onchange={setLang} />
             </div>
           </div>
           <div class="s-group">
             <label class="s-row">
               <span>{t().defaultVolume}</span>
               <div class="flex items-center gap-2">
-                <input type="range" min="0" max="100" bind:value={volume} oninput={persistSettings} class="s-range flex-1" />
-                <span class="text-white/50 w-8 text-right">{volume}%</span>
+                <input type="range" min="0" max="100" bind:value={settings.volume} oninput={() => settings.save()} class="s-range flex-1" />
+                <span class="text-white/50 w-8 text-right tabular-nums">{settings.volume}%</span>
               </div>
             </label>
             <div class="s-row">
               <span>{t().defaultSpeed}</span>
-              <Select items={speeds} value={speed} label={(s) => `${s}x`} onchange={(s) => { speed = s; persistSettings(); }} />
+              <Select items={speeds} value={settings.speed} label={(s) => `${s}x`} onchange={(s) => { settings.speed = s; settings.save(); }} />
             </div>
           </div>
           <div class="s-group">
-            <label class="s-toggle"><span>{t().rememberPosition}</span><input type="checkbox" bind:checked={rememberPosition} onchange={persistSettings} /></label>
-            <label class="s-toggle"><span>{t().autoPlay}</span><input type="checkbox" bind:checked={autoPlay} onchange={persistSettings} /></label>
+            <label class="s-toggle"><span>{t().rememberPosition}</span><input type="checkbox" bind:checked={settings.rememberPosition} onchange={() => settings.save()} /></label>
+            <label class="s-toggle"><span>{t().autoPlay}</span><input type="checkbox" bind:checked={settings.autoPlay} onchange={() => settings.save()} /></label>
           </div>
 
         {:else if tab === "video"}
@@ -172,7 +122,7 @@
                 <span>{ctrl.label}</span>
                 <div class="flex items-center gap-2">
                   <input type="range" min="-100" max="100" value={ctrl.get()} oninput={(e) => ctrl.set(Number((e.target as HTMLInputElement).value))} class="s-range flex-1" />
-                  <span class="text-white/50 w-8 text-right">{ctrl.get()}</span>
+                  <span class="text-white/50 w-8 text-right tabular-nums">{ctrl.get()}</span>
                 </div>
               </label>
             {/each}
@@ -180,7 +130,7 @@
               <span>{t().zoom}</span>
               <div class="flex items-center gap-2">
                 <input type="range" min="-1" max="3" step="0.1" bind:value={zoom} oninput={() => setVideoZoom(zoom)} class="s-range flex-1" />
-                <span class="text-white/50 w-8 text-right">{zoom.toFixed(1)}</span>
+                <span class="text-white/50 w-8 text-right tabular-nums">{zoom.toFixed(1)}</span>
               </div>
             </label>
           </div>
@@ -214,35 +164,35 @@
           <div class="s-group">
             <div class="s-row">
               <span>{t().font}</span>
-              <Select items={subFonts} value={subStyle.font} itemStyle={(f) => `font-family:'${f}'`} onchange={(f) => { subStyle.font = f; subStyle.apply(); }} />
+              <Select items={subFonts} value={settings.subFont} itemStyle={(f) => `font-family:'${f}'`} onchange={(f) => { settings.subFont = f; settings.applySubStyle(); }} />
             </div>
             <label class="s-row">
               <span>{t().size}</span>
               <div class="flex items-center gap-2">
-                <input type="range" min="10" max="100" bind:value={subStyle.size} oninput={() => subStyle.apply()} class="s-range flex-1" />
-                <span class="text-white/50 w-8 text-right">{subStyle.size}</span>
+                <input type="range" min="10" max="100" bind:value={settings.subSize} oninput={() => settings.applySubStyle()} class="s-range flex-1" />
+                <span class="text-white/50 w-8 text-right tabular-nums">{settings.subSize}</span>
               </div>
             </label>
             <div class="flex items-center justify-between py-1">
               <span>{t().textColor}</span>
-              <input type="color" bind:value={subStyle.color} oninput={() => subStyle.apply()} class="s-color" />
+              <input type="color" bind:value={settings.subColor} oninput={() => settings.applySubStyle()} class="s-color" />
             </div>
             <div class="flex items-center justify-between py-1">
               <span>{t().borderColor}</span>
-              <input type="color" bind:value={subStyle.borderColor} oninput={() => subStyle.apply()} class="s-color" />
+              <input type="color" bind:value={settings.subBorderColor} oninput={() => settings.applySubStyle()} class="s-color" />
             </div>
             <label class="s-row">
               <span>{t().borderSize}</span>
               <div class="flex items-center gap-2">
-                <input type="range" min="0" max="5" step="0.5" bind:value={subStyle.borderSize} oninput={() => subStyle.apply()} class="s-range flex-1" />
-                <span class="text-white/50 w-8 text-right">{subStyle.borderSize}</span>
+                <input type="range" min="0" max="5" step="0.5" bind:value={settings.subBorderSize} oninput={() => settings.applySubStyle()} class="s-range flex-1" />
+                <span class="text-white/50 w-8 text-right tabular-nums">{settings.subBorderSize}</span>
               </div>
             </label>
             <label class="s-row">
               <span>{t().position}</span>
               <div class="flex items-center gap-2">
-                <input type="range" min="0" max="100" bind:value={subStyle.position} oninput={() => subStyle.apply()} class="s-range flex-1" />
-                <span class="text-white/50 w-8 text-right">{subStyle.position}%</span>
+                <input type="range" min="0" max="100" bind:value={settings.subPosition} oninput={() => settings.applySubStyle()} class="s-range flex-1" />
+                <span class="text-white/50 w-8 text-right tabular-nums">{settings.subPosition}%</span>
               </div>
             </label>
           </div>

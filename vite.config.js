@@ -8,6 +8,10 @@ const host = process.env.TAURI_DEV_HOST;
 export default defineConfig(async () => ({
   plugins: [sveltekit(), tailwindcss()],
   clearScreen: false,
+  build: {
+    target: "esnext",
+    reportCompressedSize: false,
+  },
   server: {
     port: 1420,
     strictPort: true,
