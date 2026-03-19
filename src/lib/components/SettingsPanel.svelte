@@ -196,6 +196,12 @@
               </div>
             </label>
           </div>
+          <div class="s-group">
+            <span class="text-white/50 text-xs uppercase tracking-wide">OpenSubtitles</span>
+            <label class="s-row"><span>API Key</span><input type="text" class="s-input" bind:value={settings.osApiKey} onchange={() => settings.save()} placeholder="Your API key" /></label>
+            <label class="s-row"><span>Username</span><input type="text" class="s-input" bind:value={settings.osUsername} onchange={() => settings.save()} placeholder="Username" /></label>
+            <label class="s-row"><span>Password</span><input type="password" class="s-input" bind:value={settings.osPassword} onchange={() => settings.save()} placeholder="Password" /></label>
+          </div>
         {/if}
       </div>
     </div>
@@ -224,4 +230,7 @@
   }
   .s-toggle input[type="checkbox"]:checked { background: oklch(0.65 0.25 250); }
   .s-toggle input[type="checkbox"]:checked::after { transform: translateX(16px); }
+  .s-input { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; padding: 6px 8px; color: white; font-size: 12px; outline: none; }
+  .s-input:focus { border-color: oklch(0.65 0.25 250); }
+  .s-input::placeholder { color: rgba(255,255,255,0.25); }
 </style>

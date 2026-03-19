@@ -17,6 +17,12 @@ pub struct PlayerSettings {
     pub subtitle_style: SubtitleStyleSettings,
     #[serde(default = "default_translate_lang")]
     pub translate_lang: String,
+    #[serde(default)]
+    pub os_api_key: String,
+    #[serde(default)]
+    pub os_username: String,
+    #[serde(default)]
+    pub os_password: String,
 }
 
 fn default_translate_lang() -> String { "pt".into() }
@@ -65,6 +71,9 @@ impl Default for PlayerSettings {
             recent_files: Vec::new(),
             subtitle_style: SubtitleStyleSettings::default(),
             translate_lang: default_translate_lang(),
+            os_api_key: String::new(),
+            os_username: String::new(),
+            os_password: String::new(),
         }
     }
 }

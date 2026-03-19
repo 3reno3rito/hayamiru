@@ -93,6 +93,9 @@ pub fn run() {
             commands::media_info::get_media_info,
             // Translate
             commands::translate::translate_subtitles,
+            // OpenSubtitles
+            commands::opensubtitles::search_subtitles,
+            commands::opensubtitles::download_subtitle,
             // Window
             commands::window::toggle_fullscreen,
             commands::window::set_always_on_top,

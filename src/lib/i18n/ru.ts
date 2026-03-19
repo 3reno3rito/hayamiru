@@ -18,7 +18,6 @@ export default {
   alwaysOnTop: "Поверх всех окон",
   off: "Выкл",
   auto: "Авто",
-  disabled: "Отключено",
   noSubtitleTracks: "Нет дорожек субтитров",
   noAudioTracks: "Нет аудиодорожек",
   loadExternalFile: "Загрузить внешний файл...",

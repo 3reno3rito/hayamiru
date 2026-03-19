@@ -10,6 +10,9 @@ export interface PlayerSettings {
   language: string;
   translate_lang: string;
   subtitle_style: SubtitleStyleSettings;
+  os_api_key: string;
+  os_username: string;
+  os_password: string;
 }
 
 export interface SubtitleStyleSettings {
@@ -33,6 +36,9 @@ class SettingsStore {
   autoPlay = $state(true);
   language = $state("en");
   translateLang = $state("pt");
+  osApiKey = $state("");
+  osUsername = $state("");
+  osPassword = $state("");
 
   // Subtitle style
   subFont = $state("Segoe UI");
@@ -54,6 +60,9 @@ class SettingsStore {
       this.autoPlay = s.auto_play;
       this.language = s.language;
       this.translateLang = s.translate_lang ?? "pt";
+      this.osApiKey = s.os_api_key ?? "";
+      this.osUsername = s.os_username ?? "";
+      this.osPassword = s.os_password ?? "";
       this.subFont = s.subtitle_style.font;
       this.subSize = s.subtitle_style.size;
       this.subColor = s.subtitle_style.color;
@@ -105,6 +114,7 @@ class SettingsStore {
       volume: this.volume, speed: this.speed,
       remember_position: this.rememberPosition, auto_play: this.autoPlay,
       language: this.language, translate_lang: this.translateLang,
+      os_api_key: this.osApiKey, os_username: this.osUsername, os_password: this.osPassword,
       subtitle_style: {
         font: this.subFont, size: this.subSize, color: this.subColor,
         border_color: this.subBorderColor, border_size: this.subBorderSize,

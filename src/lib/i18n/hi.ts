@@ -18,7 +18,6 @@ export default {
   alwaysOnTop: "हमेशा ऊपर",
   off: "बंद",
   auto: "स्वचालित",
-  disabled: "अक्षम",
   noSubtitleTracks: "कोई उपशीर्षक ट्रैक नहीं",
   noAudioTracks: "कोई ऑडियो ट्रैक नहीं",
   loadExternalFile: "बाहरी फ़ाइल लोड करें...",

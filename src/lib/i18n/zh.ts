@@ -18,7 +18,6 @@ export default {
   alwaysOnTop: "置顶",
   off: "关",
   auto: "自动",
-  disabled: "已禁用",
   noSubtitleTracks: "无字幕轨道",
   noAudioTracks: "无音频轨道",
   loadExternalFile: "加载外部文件...",

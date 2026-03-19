@@ -1,6 +1,7 @@
 <script lang="ts">
   import { getTracks, selectSubtitle, loadSubtitle, toggleSubtitles, setSubtitleDelay, type TrackInfo } from "$lib/bindings/tracks";
   import { translateSubtitles } from "$lib/bindings/translate";
+  import { searchSubtitles, downloadSubtitle, type SubResult } from "$lib/bindings/opensubtitles";
   import { listen } from "@tauri-apps/api/event";
   import { open } from "@tauri-apps/plugin-dialog";
   import Select from "./Select.svelte";
@@ -8,6 +9,27 @@
   import { settings, subFonts } from "$lib/stores/settings.svelte";
 
   let { visible = $bindable(false) }: { visible: boolean } = $props();
+  // Online search
+  let searchResults = $state<SubResult[]>([]);
+  let searching = $state(false);
+  let downloading = $state(false);
+  let searchError = $state("");
+
+  async function handleSearch() {
+    if (!settings.osApiKey) { searchError = "Set API key in Settings"; return; }
+    searching = true; searchError = ""; searchResults = [];
+    try { searchResults = await searchSubtitles(""); }
+    catch (e: any) { searchError = String(e); }
+    searching = false;
+  }
+
+  async function handleDownload(fileId: number, fileName: string) {
+    downloading = true; searchError = "";
+    try { await downloadSubtitle(fileId, fileName); page = "main"; refresh(); }
+    catch (e: any) { searchError = String(e); }
+    downloading = false;
+  }
+
   let translating = $state(false);
   let translateProgress = $state(0);
   let translateTotal = $state(0);
@@ -35,7 +57,7 @@
   let tracks = $state<TrackInfo[]>([]);
   let delay = $state(0);
   let subVisible = $state(true);
-  let page = $state<"main" | "style">("main");
+  let page = $state<"main" | "style" | "search">("main");
 
 
   async function refresh() {
@@ -81,7 +103,7 @@
   <!-- svelte-ignore a11y_no_static_element_interactions -->
   <div class="fixed inset-0 z-[80]" onclick={() => visible = false}></div>
 
-  <div data-panel class="fixed right-4 bottom-16 z-[81] w-[280px] max-h-[70vh] bg-[#18181c]/95 backdrop-blur-md border border-white/10 rounded-xl shadow-2xl text-[13px] text-white/90 flex flex-col select-none">
+  <div data-panel class="fixed right-4 bottom-16 z-[81] w-[280px] max-h-[70vh] bg-[#18181c]/95 backdrop-blur-md border border-white/10 rounded-xl shadow-2xl text-[13px] text-white/90 flex flex-col select-none overflow-hidden">
 
     {#if page === "main"}
       <!-- Header -->
@@ -91,16 +113,9 @@
         <button class="ctrl-btn w-6 h-6 text-xs" onclick={() => visible = false}>✕</button>
       </div>
 
+      <div class="flex-1 overflow-y-auto">
       <!-- Track list -->
-      <div class="flex-1 overflow-y-auto max-h-[180px]">
-        <button
-          class="w-full flex items-center px-3 py-2 hover:bg-white/[0.08] text-left {tracks.every(t => !t.selected) ? 'text-blue-400' : 'text-white/70'}"
-          onclick={() => handleSelect(0)}
-        >
-          <span class="w-4 text-xs mr-2">{tracks.every((t: TrackInfo) => !t.selected) ? "✓" : "\u00A0"}</span>
-          <span>{t().disabled}</span>
-        </button>
-
+      <div class="max-h-[180px] overflow-y-auto">
         {#each tracks as track}
           <button
             class="w-full flex items-center px-3 py-2 hover:bg-white/[0.08] text-left {track.selected ? 'text-blue-400' : 'text-white/70'}"
@@ -121,7 +136,7 @@
         {/if}
       </div>
 
-      <!-- Load external -->
+      <!-- Load external + Search online -->
       <div class="border-t border-white/[0.08]">
         <button
           class="w-full flex items-center gap-2 px-3 py-2 hover:bg-white/[0.08] text-white/60 hover:text-white/90"
@@ -129,6 +144,13 @@
         >
           <svg class="w-3.5 h-3.5 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
           {t().loadExternalFile}
+        </button>
+        <button
+          class="w-full flex items-center gap-2 px-3 py-2 hover:bg-white/[0.08] text-white/60 hover:text-white/90"
+          onclick={() => { page = "search"; handleSearch(); }}
+        >
+          <svg class="w-3.5 h-3.5 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+          Search online...
         </button>
       </div>
 
@@ -182,6 +204,7 @@
           <svg class="w-3.5 h-3.5 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
         </button>
       </div>
+      </div>
 
     {:else if page === "style"}
       <!-- Style header -->
@@ -233,6 +256,39 @@
           </div>
           <input type="range" min="0" max="100" bind:value={settings.subPosition} oninput={() => settings.applySubStyle()} class="s-range w-full" />
         </div>
+      </div>
+    {:else if page === "search"}
+      <!-- Search online results -->
+      <div class="flex items-center gap-2 border-b border-white/[0.08] px-3 py-2">
+        <button class="ctrl-btn w-6 h-6 text-xs hover:bg-white/10 rounded" onclick={() => page = "main"}>←</button>
+        <span class="font-medium text-xs">Search Online</span>
+      </div>
+      <div class="flex-1 overflow-y-auto">
+        {#if searching}
+          <div class="flex items-center justify-center py-8 text-white/40 text-xs">Searching...</div>
+        {:else if searchError}
+          <div class="px-3 py-4 text-red-400 text-xs">{searchError}</div>
+        {:else if searchResults.length === 0}
+          <div class="flex items-center justify-center py-8 text-white/30 text-xs">No results</div>
+        {:else}
+          {#if downloading}
+            <div class="flex items-center justify-center py-8 text-white/40 text-xs">Downloading...</div>
+          {/if}
+          {#each searchResults.slice(0, 20) as sub}
+            <button
+              class="w-full text-left px-3 py-2 hover:bg-white/[0.08] border-b border-white/[0.04] disabled:opacity-30"
+              disabled={downloading}
+              onclick={() => handleDownload(sub.file_id, sub.name)}
+            >
+              <div class="text-white/80 text-xs truncate">{sub.name}</div>
+              <div class="flex items-center gap-2 mt-0.5 text-[11px] text-white/30">
+                <span>{sub.lang}</span>
+                <span>↓{sub.download_count}</span>
+                {#if sub.rating > 0}<span>★{sub.rating.toFixed(1)}</span>{/if}
+              </div>
+            </button>
+          {/each}
+        {/if}
       </div>
     {/if}
   </div>

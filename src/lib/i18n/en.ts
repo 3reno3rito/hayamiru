@@ -20,7 +20,6 @@ export default {
   auto: "Auto",
 
   // Panels
-  disabled: "Disabled",
   noSubtitleTracks: "No subtitle tracks",
   noAudioTracks: "No audio tracks",
   loadExternalFile: "Load external file...",

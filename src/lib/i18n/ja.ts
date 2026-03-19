@@ -18,7 +18,6 @@ export default {
   alwaysOnTop: "常に最前面",
   off: "オフ",
   auto: "自動",
-  disabled: "無効",
   noSubtitleTracks: "字幕トラックがありません",
   noAudioTracks: "音声トラックがありません",
   loadExternalFile: "外部ファイルを読み込む...",

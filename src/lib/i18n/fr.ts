@@ -18,7 +18,6 @@ export default {
   alwaysOnTop: "Toujours au Premier Plan",
   off: "Désactivé",
   auto: "Auto",
-  disabled: "Désactivé",
   noSubtitleTracks: "Aucune piste de sous-titres",
   noAudioTracks: "Aucune piste audio",
   loadExternalFile: "Charger un fichier externe...",

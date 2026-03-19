@@ -18,7 +18,6 @@ export default {
   alwaysOnTop: "دائمًا في المقدمة",
   off: "إيقاف",
   auto: "تلقائي",
-  disabled: "معطّل",
   noSubtitleTracks: "لا توجد مسارات ترجمة",
   noAudioTracks: "لا توجد مسارات صوتية",
   loadExternalFile: "تحميل ملف خارجي...",

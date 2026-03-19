@@ -18,7 +18,6 @@ export default {
   alwaysOnTop: "항상 위에",
   off: "끔",
   auto: "자동",
-  disabled: "비활성",
   noSubtitleTracks: "자막 트랙 없음",
   noAudioTracks: "오디오 트랙 없음",
   loadExternalFile: "외부 파일 불러오기...",
