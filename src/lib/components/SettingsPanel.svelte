@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { setBrightness, setContrast, setSaturation, setVideoZoom, resetVideoZoomPan } from "$lib/bindings/video";
+  import { setBrightness, setContrast, setSaturation, setVideoZoom, resetVideoZoomPan, toggleDeinterlace } from "$lib/bindings/video";
   import { setAudioNormalization, setAudioEqualizer, resetAudioEqualizer } from "$lib/bindings/audio-fx";
   import { settings, subFonts } from "$lib/stores/settings.svelte";
   import { t, setLocale } from "$lib/i18n/index.svelte";
@@ -13,6 +13,7 @@
   let contrast = $state(0);
   let saturation = $state(0);
   let zoom = $state(0);
+  let deinterlace = $state(false);
 
   // Audio (local)
   let normEnabled = $state(false);
@@ -38,7 +39,7 @@
   ];
 
   function setLang(code: string) { settings.language = code; setLocale(code); settings.save(); }
-  function resetVideo() { brightness = 0; contrast = 0; saturation = 0; zoom = 0; setBrightness(0); setContrast(0); setSaturation(0); resetVideoZoomPan(); }
+  function resetVideo() { brightness = 0; contrast = 0; saturation = 0; zoom = 0; deinterlace = false; setBrightness(0); setContrast(0); setSaturation(0); resetVideoZoomPan(); }
   function applyEq() { setAudioEqualizer(eqBands).catch(() => {}); }
   function resetEq() { eqBands = [0,0,0,0,0]; resetAudioEqualizer(); }
   function setPreset(name: string) { eqBands = [...eqPresets[name]]; applyEq(); }
@@ -133,6 +134,9 @@
                 <span class="text-white/50 w-8 text-right tabular-nums">{zoom.toFixed(1)}</span>
               </div>
             </label>
+          </div>
+          <div class="s-group">
+            <label class="s-toggle"><span>Deinterlace</span><input type="checkbox" bind:checked={deinterlace} onchange={() => toggleDeinterlace()} /></label>
           </div>
 
         {:else if tab === "audio"}

@@ -52,6 +52,8 @@ pub fn run() {
             commands::playback::get_chapters,
             commands::playback::seek_chapter,
             commands::playback::open_url,
+            commands::playback::set_mpv_property,
+            commands::playback::mpv_command,
             // Tracks
             commands::tracks::get_tracks,
             commands::tracks::select_subtitle,

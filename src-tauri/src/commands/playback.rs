@@ -211,3 +211,16 @@ pub async fn open_url(url: String, state: State<'_, MpvState>) -> Result<(), App
     PlaybackService::open_url(state.get()?, &url)?;
     Ok(())
 }
+
+#[tauri::command]
+pub async fn set_mpv_property(name: String, value: String, state: State<'_, MpvState>) -> Result<(), AppError> {
+    state.get()?.set::<&str>(&name, &value)?;
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn mpv_command(args: Vec<String>, state: State<'_, MpvState>) -> Result<(), AppError> {
+    let strs: Vec<&str> = args.iter().map(|s| s.as_str()).collect();
+    state.get()?.command(&strs)?;
+    Ok(())
+}

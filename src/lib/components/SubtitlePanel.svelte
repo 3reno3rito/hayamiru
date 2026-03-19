@@ -103,7 +103,7 @@
   <!-- svelte-ignore a11y_no_static_element_interactions -->
   <div class="fixed inset-0 z-[80]" onclick={() => visible = false}></div>
 
-  <div data-panel class="fixed right-4 bottom-16 z-[81] w-[280px] max-h-[70vh] bg-[#18181c]/95 backdrop-blur-md border border-white/10 rounded-xl shadow-2xl text-[13px] text-white/90 flex flex-col select-none overflow-hidden">
+  <div data-panel class="fixed right-4 bottom-16 z-[81] w-[280px] max-h-[80vh] bg-[#18181c]/95 backdrop-blur-md border border-white/10 rounded-xl shadow-2xl text-[13px] text-white/90 flex flex-col select-none overflow-hidden">
 
     {#if page === "main"}
       <!-- Header -->
