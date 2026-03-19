@@ -58,7 +58,7 @@ pub async fn translate_subtitles(
             _ => subtitle_extract::extract_from_srt(&sub_track.external_filename),
         }
     } else {
-        subtitle_extract::extract_from_video(&video_path, Some(sub_track.id))
+        subtitle_extract::extract_from_video(&video_path, Some(sub_track.id), is_ass)
     }.map_err(AppError::Config)?;
 
     if entries.is_empty() { return Err(AppError::Config("No subtitle entries found".into())); }

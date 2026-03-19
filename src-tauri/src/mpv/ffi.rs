@@ -60,9 +60,17 @@ impl MpvFfi {
         info!("Loading libmpv");
 
         let lib = unsafe {
-            Library::new("libmpv-2.dll")
-                .or_else(|_| Library::new("mpv-2.dll"))
-                .map_err(|e| MpvError::LibraryLoad(e.to_string()))?
+            // Try exe dir + binaries/ subfolder (production), then system PATH (dev)
+            let exe_dir = std::env::current_exe().ok().and_then(|p| p.parent().map(|d| d.to_path_buf()));
+            let result = exe_dir.as_ref()
+                .and_then(|dir| Library::new(dir.join("libmpv-2.dll")).ok()
+                    .or_else(|| Library::new(dir.join("binaries/libmpv-2.dll")).ok()))
+                .or_else(|| Library::new("libmpv-2.dll").ok())
+                .or_else(|| Library::new("mpv-2.dll").ok());
+            match result {
+                Some(lib) => lib,
+                None => return Err(MpvError::LibraryLoad("libmpv-2.dll not found".into())),
+            }
         };
 
         unsafe {

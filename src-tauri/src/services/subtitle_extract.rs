@@ -1,32 +1,62 @@
 use std::fmt::Write;
 use std::path::Path;
 use std::process::Command;
+#[cfg(windows)]
+use std::os::windows::process::CommandExt;
+
+#[cfg(windows)]
+const CREATE_NO_WINDOW: u32 = 0x08000000;
+
+fn cmd(program: &str) -> Command {
+    let mut c = Command::new(program);
+    #[cfg(windows)]
+    c.creation_flags(CREATE_NO_WINDOW);
+    c
+}
 
 #[derive(Clone)]
 pub struct SubEntry {
     pub start_ms: u64,
     pub end_ms: u64,
     pub text: String,
+    pub style: String,
 }
 
-/// Extract embedded subtitles via ffmpeg → SRT pipe.
-pub fn extract_from_video(path: &str, mpv_track_id: Option<i64>) -> Result<Vec<SubEntry>, String> {
+/// Extract embedded subtitles via ffmpeg. Uses ASS format if source is ASS, SRT otherwise.
+pub fn extract_from_video(path: &str, mpv_track_id: Option<i64>, is_ass: bool) -> Result<Vec<SubEntry>, String> {
     let ffmpeg = find_ffmpeg().ok_or("ffmpeg not found")?;
     let stream = resolve_stream_index(path, mpv_track_id);
-    let output = Command::new(&ffmpeg)
-        .args(["-i", path, "-map", &stream, "-f", "srt", "-"])
+    let fmt = if is_ass { "ass" } else { "srt" };
+    let output = cmd(&ffmpeg)
+        .args(["-i", path, "-map", &stream, "-f", fmt, "-"])
         .output()
         .map_err(|e| format!("ffmpeg failed: {e}"))?;
     let text = String::from_utf8_lossy(&output.stdout);
     if text.trim().is_empty() { return Err("No subtitle data extracted".into()); }
-    parse_srt_content(&text.replace("\r\n", "\n"))
+    let content = text.replace("\r\n", "\n");
+    if is_ass { parse_ass_content(&content) } else { parse_srt_content(&content) }
+}
+
+fn parse_ass_content(content: &str) -> Result<Vec<SubEntry>, String> {
+    let mut entries = Vec::new();
+    for line in content.lines() {
+        if !line.starts_with("Dialogue:") { continue; }
+        let parts: Vec<&str> = line["Dialogue:".len()..].trim_start().splitn(10, ',').collect();
+        if parts.len() < 10 { continue; }
+        let text = strip_tags(parts[9].trim());
+        if !text.is_empty() {
+            entries.push(SubEntry { start_ms: ass_time_to_ms(parts[1].trim()), end_ms: ass_time_to_ms(parts[2].trim()), text, style: parts[3].trim().to_string() });
+        }
+    }
+    entries.sort_by_key(|e| e.start_ms);
+    Ok(entries)
 }
 
 /// Extract ASS header from embedded track via ffmpeg.
 pub fn extract_ass_header_from_video(path: &str, mpv_track_id: i64) -> Result<String, String> {
     let ffmpeg = find_ffmpeg().ok_or("ffmpeg not found")?;
     let stream = resolve_stream_index(path, Some(mpv_track_id));
-    let output = Command::new(&ffmpeg)
+    let output = cmd(&ffmpeg)
         .args(["-i", path, "-map", &stream, "-f", "ass", "-"])
         .output()
         .map_err(|e| format!("ffmpeg failed: {e}"))?;
@@ -53,7 +83,7 @@ pub fn extract_from_ass(path: &str) -> Result<Vec<SubEntry>, String> {
         if parts.len() < 10 { continue; }
         let text = strip_tags(parts[9].trim());
         if !text.is_empty() {
-            entries.push(SubEntry { start_ms: ass_time_to_ms(parts[1].trim()), end_ms: ass_time_to_ms(parts[2].trim()), text });
+            entries.push(SubEntry { start_ms: ass_time_to_ms(parts[1].trim()), end_ms: ass_time_to_ms(parts[2].trim()), text, style: parts[3].trim().to_string() });
         }
     }
     entries.sort_by_key(|e| e.start_ms);
@@ -65,7 +95,7 @@ pub fn write_ass(entries: &[SubEntry], header: &str, path: &str) -> Result<(), S
     let mut out = String::with_capacity(header.len() + entries.len() * 100);
     out.push_str(header);
     for e in entries {
-        let _ = writeln!(out, "Dialogue: 0,{},{},Default,,0,0,0,,{}", ms_to_ass(e.start_ms), ms_to_ass(e.end_ms), e.text.replace('\n', "\\N"));
+        let _ = writeln!(out, "Dialogue: 0,{},{},{},,0,0,0,,{}", ms_to_ass(e.start_ms), ms_to_ass(e.end_ms), e.style, e.text.replace('\n', "\\N"));
     }
     std::fs::write(path, out).map_err(|e| format!("Cannot write: {e}"))
 }
@@ -85,7 +115,7 @@ fn resolve_stream_index(path: &str, mpv_track_id: Option<i64>) -> String {
     let id = mpv_track_id.unwrap_or(1);
     // Parse ffmpeg stderr to count subtitle streams and map mpv id → stream index
     if let Some(ffmpeg) = find_ffmpeg() {
-        if let Ok(output) = Command::new(&ffmpeg).args(["-i", path, "-hide_banner"]).output() {
+        if let Ok(output) = cmd(&ffmpeg).args(["-i", path, "-hide_banner"]).output() {
             let stderr = String::from_utf8_lossy(&output.stderr);
             let mut sub_count: i64 = 0;
             for line in stderr.lines() {
@@ -139,7 +169,7 @@ fn parse_srt_content(content: &str) -> Result<Vec<SubEntry>, String> {
         if lines.len() < 3 { continue; }
         let Some((start, end)) = parse_srt_timing(lines[1]) else { continue };
         let text = strip_tags(&lines[2..].join("\n")).trim().to_string();
-        if !text.is_empty() { entries.push(SubEntry { start_ms: start, end_ms: end, text }); }
+        if !text.is_empty() { entries.push(SubEntry { start_ms: start, end_ms: end, text, style: "Default".into() }); }
     }
     Ok(entries)
 }
@@ -189,7 +219,7 @@ fn find_ffmpeg() -> Option<String> {
             if p.exists() { return Some(p.to_string_lossy().into()); }
         }
     }
-    if Command::new("ffmpeg").arg("-version").output().is_ok() { return Some("ffmpeg".into()); }
+    if cmd("ffmpeg").arg("-version").output().is_ok() { return Some("ffmpeg".into()); }
     for base in ["C:/ffmpeg/bin", "C:/Program Files/ffmpeg/bin"] {
         let p = format!("{base}/ffmpeg.exe");
         if Path::new(&p).exists() { return Some(p); }
