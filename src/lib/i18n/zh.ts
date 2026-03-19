@@ -25,6 +25,7 @@ export default {
   visibility: "可见性",
   on: "开",
   delay: "延迟",
+  translate: "翻译",
   style: "样式",
   reset: "重置",
   font: "字体",

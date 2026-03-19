@@ -25,6 +25,7 @@ export default {
   visibility: "Visibilité",
   on: "ACTIVÉ",
   delay: "Délai",
+  translate: "Traduire",
   style: "Style",
   reset: "Réinitialiser",
   font: "Police",

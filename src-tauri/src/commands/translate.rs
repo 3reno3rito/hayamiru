@@ -47,7 +47,7 @@ pub async fn translate_subtitles(
     } else {
         // Embedded subtitle — extract via ffprobe/ffmpeg (exact timing)
         subtitle_extract::extract_from_video(&video_path, Some(sub_track.id))
-    }.map_err(|e| AppError::Config(e))?;
+    }.map_err(AppError::Config)?;
 
     if entries.is_empty() { return Err(AppError::Config("No subtitle entries found".into())); }
 
@@ -93,7 +93,7 @@ pub async fn translate_subtitles(
         }
     }
 
-    subtitle_extract::write_srt(&translated, &srt_path).map_err(|e| AppError::Config(e))?;
+    subtitle_extract::write_srt(&translated, &srt_path).map_err(AppError::Config)?;
     mpv.command(&["sub-add", &srt_path, "auto"])?;
     let _ = app.emit("translate:progress", TranslateProgress { current: total, total, done: true });
     Ok(srt_path)

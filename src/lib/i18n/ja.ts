@@ -25,6 +25,7 @@ export default {
   visibility: "表示",
   on: "オン",
   delay: "遅延",
+  translate: "翻訳",
   style: "スタイル",
   reset: "リセット",
   font: "フォント",

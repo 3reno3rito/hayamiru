@@ -25,6 +25,7 @@ export default {
   visibility: "Видимость",
   on: "Вкл",
   delay: "Задержка",
+  translate: "Перевести",
   style: "Стиль",
   reset: "Сброс",
   font: "Шрифт",

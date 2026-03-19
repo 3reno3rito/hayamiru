@@ -25,6 +25,7 @@ export default {
   visibility: "표시",
   on: "켬",
   delay: "지연",
+  translate: "번역",
   style: "스타일",
   reset: "초기화",
   font: "글꼴",

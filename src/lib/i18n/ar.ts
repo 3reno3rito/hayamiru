@@ -25,6 +25,7 @@ export default {
   visibility: "الرؤية",
   on: "تشغيل",
   delay: "التأخير",
+  translate: "ترجمة",
   style: "النمط",
   reset: "إعادة تعيين",
   font: "الخط",

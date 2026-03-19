@@ -144,7 +144,7 @@
             <span class="text-white/30 text-xs">{translateProgress}/{translateTotal}</span>
           </div>
         {:else}
-          <span class="text-white/40 text-xs block mb-1.5">{t().translate || "Translate"}</span>
+          <span class="text-white/40 text-xs block mb-1.5">{t().translate}</span>
           <div class="flex items-center gap-1.5">
             <div class="flex-1"><Select items={translateLangs.map(l => l.name)} value={translateLangs.find(l => l.code === translateLang)?.name || "Português"} onchange={(name) => { const l = translateLangs.find(x => x.name === name); if (l) translateLang = l.code; }} /></div>
             <button class="ctrl-btn w-[30px] h-[30px] bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 rounded flex items-center justify-center" onclick={handleTranslate} title="Translate">

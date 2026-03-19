@@ -25,6 +25,7 @@ export default {
   visibility: "Visibilidade",
   on: "LIGADO",
   delay: "Atraso",
+  translate: "Traduzir",
   style: "Estilo",
   reset: "Resetar",
   font: "Fonte",

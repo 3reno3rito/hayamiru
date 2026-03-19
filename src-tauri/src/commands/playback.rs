@@ -98,7 +98,7 @@ pub async fn open_file(
         .unwrap_or_default();
     app_state.with(|settings, current_file| {
         *current_file = Some(path.clone());
-        settings.touch_recent(&path, &title, resume.unwrap_or(0.0));
+        settings.touch_recent(&path, &title, 0.0);
         settings.save().ok();
     })?;
 

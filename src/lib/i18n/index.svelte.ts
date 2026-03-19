@@ -11,7 +11,7 @@ import ru from "./ru";
 import hi from "./hi";
 import ar from "./ar";
 
-export type Dict = typeof en;
+export type Dict = Record<keyof typeof en, string>;
 
 const dicts: Record<string, Dict> = { en, pt, es, fr, de, it, ja, ko, zh, ru, hi, ar };
 

@@ -25,6 +25,7 @@ export default {
   visibility: "दृश्यता",
   on: "चालू",
   delay: "विलंब",
+  translate: "अनुवाद",
   style: "शैली",
   reset: "रीसेट",
   font: "फ़ॉन्ट",
