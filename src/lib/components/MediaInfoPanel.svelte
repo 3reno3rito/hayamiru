@@ -43,28 +43,28 @@
     </div>
 
     <div class="px-3 py-2 space-y-1.5">
-      <div class="flex justify-between"><span class="text-white/50">File</span><span class="text-right truncate ml-4 max-w-[180px]">{info.filename}</span></div>
+      <div class="flex justify-between"><span class="text-white/50">{t().file}</span><span class="text-right truncate ml-4 max-w-[180px]">{info.filename}</span></div>
       {#if info.width > 0}
-        <div class="flex justify-between"><span class="text-white/50">Resolution</span><span>{info.width}×{info.height}</span></div>
+        <div class="flex justify-between"><span class="text-white/50">{t().resolution}</span><span>{info.width}×{info.height}</span></div>
       {/if}
       {#if info.video_codec}
-        <div class="flex justify-between"><span class="text-white/50">Video Codec</span><span>{info.video_codec}</span></div>
+        <div class="flex justify-between"><span class="text-white/50">{t().videoCodec}</span><span>{info.video_codec}</span></div>
       {/if}
       {#if info.audio_codec}
-        <div class="flex justify-between"><span class="text-white/50">Audio Codec</span><span>{info.audio_codec}</span></div>
+        <div class="flex justify-between"><span class="text-white/50">{t().audioCodec}</span><span>{info.audio_codec}</span></div>
       {/if}
       {#if info.fps > 0}
-        <div class="flex justify-between"><span class="text-white/50">FPS</span><span>{info.fps.toFixed(2)}</span></div>
+        <div class="flex justify-between"><span class="text-white/50">{t().fps}</span><span>{info.fps.toFixed(2)}</span></div>
       {/if}
       {#if info.video_bitrate > 0}
-        <div class="flex justify-between"><span class="text-white/50">Video Bitrate</span><span>{fmtBitrate(info.video_bitrate)}</span></div>
+        <div class="flex justify-between"><span class="text-white/50">{t().videoBitrate}</span><span>{fmtBitrate(info.video_bitrate)}</span></div>
       {/if}
       {#if info.audio_bitrate > 0}
-        <div class="flex justify-between"><span class="text-white/50">Audio Bitrate</span><span>{fmtBitrate(info.audio_bitrate)}</span></div>
+        <div class="flex justify-between"><span class="text-white/50">{t().audioBitrate}</span><span>{fmtBitrate(info.audio_bitrate)}</span></div>
       {/if}
-      <div class="flex justify-between"><span class="text-white/50">Duration</span><span>{fmtDuration(info.duration)}</span></div>
+      <div class="flex justify-between"><span class="text-white/50">{t().duration}</span><span>{fmtDuration(info.duration)}</span></div>
       {#if info.file_size > 0}
-        <div class="flex justify-between"><span class="text-white/50">File Size</span><span>{fmt(info.file_size)}</span></div>
+        <div class="flex justify-between"><span class="text-white/50">{t().fileSize}</span><span>{fmt(info.file_size)}</span></div>
       {/if}
     </div>
   </div>

@@ -136,7 +136,7 @@
             </label>
           </div>
           <div class="s-group">
-            <label class="s-toggle"><span>Deinterlace</span><input type="checkbox" bind:checked={deinterlace} onchange={() => toggleDeinterlace()} /></label>
+            <label class="s-toggle"><span>{t().deinterlace}</span><input type="checkbox" bind:checked={deinterlace} onchange={() => toggleDeinterlace()} /></label>
           </div>
 
         {:else if tab === "audio"}
@@ -168,7 +168,13 @@
           <div class="s-group">
             <div class="s-row">
               <span>{t().font}</span>
-              <Select items={subFonts} value={settings.subFont} itemStyle={(f) => `font-family:'${f}'`} onchange={(f) => { settings.subFont = f; settings.applySubStyle(); }} />
+              <div class="flex items-center gap-1.5">
+                <div class="flex-1"><Select items={subFonts} value={settings.subFont} itemStyle={(f) => `font-family:'${f}'`} onchange={(f) => { settings.subFont = f; settings.applySubStyle(); }} /></div>
+                <button
+                  class="w-8 h-8 rounded text-sm font-bold border border-white/10 transition-all {settings.subBold ? 'bg-blue-500/20 text-blue-400 border-blue-400/30' : 'bg-white/8 text-white/60 hover:bg-white/12'}"
+                  onclick={() => { settings.subBold = !settings.subBold; settings.applySubStyle(); }}
+                >B</button>
+              </div>
             </div>
             <label class="s-row">
               <span>{t().size}</span>
@@ -202,9 +208,9 @@
           </div>
           <div class="s-group">
             <span class="text-white/50 text-xs uppercase tracking-wide">OpenSubtitles</span>
-            <label class="s-row"><span>API Key</span><input type="text" class="s-input" bind:value={settings.osApiKey} onchange={() => settings.save()} placeholder="Your API key" /></label>
-            <label class="s-row"><span>Username</span><input type="text" class="s-input" bind:value={settings.osUsername} onchange={() => settings.save()} placeholder="Username" /></label>
-            <label class="s-row"><span>Password</span><input type="password" class="s-input" bind:value={settings.osPassword} onchange={() => settings.save()} placeholder="Password" /></label>
+            <label class="s-row"><span>{t().apiKey}</span><input type="text" class="s-input" bind:value={settings.osApiKey} onchange={() => settings.save()} placeholder={t().apiKey} /></label>
+            <label class="s-row"><span>{t().username}</span><input type="text" class="s-input" bind:value={settings.osUsername} onchange={() => settings.save()} placeholder={t().username} /></label>
+            <label class="s-row"><span>{t().password}</span><input type="password" class="s-input" bind:value={settings.osPassword} onchange={() => settings.save()} placeholder={t().password} /></label>
           </div>
         {/if}
       </div>

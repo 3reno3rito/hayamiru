@@ -1,5 +1,6 @@
 import type { Dict } from "./index.svelte";
 export default {
+  // Context menu
   openFile: "Datei Öffnen",
   pause: "Pause",
   play: "Wiedergabe",
@@ -18,6 +19,8 @@ export default {
   alwaysOnTop: "Immer im Vordergrund",
   off: "Aus",
   auto: "Auto",
+
+  // Panels
   noSubtitleTracks: "Keine Untertitelspuren",
   noAudioTracks: "Keine Audiospuren",
   loadExternalFile: "Externe Datei laden...",
@@ -35,14 +38,42 @@ export default {
   position: "Position",
   text: "Text",
   border: "Rand",
+
+  // Playlist
   playlist: "Wiedergabeliste",
   emptyPlaylist: "Leere Wiedergabeliste",
   addFiles: "+ Dateien",
   addFolder: "+ Ordner",
   clear: "Leeren",
+  remove: "Entfernen",
+  shuffle: "Zufällig",
+  repeat: "Wiederholen",
+  items: "Einträge",
+
+  // Subtitle search
+  searchOnline: "Online suchen...",
+  searchOnlineTitle: "Online Suchen",
+  searching: "Suche läuft...",
+  noResults: "Keine Ergebnisse",
+  downloading: "Herunterladen...",
+  downloaded: "Heruntergeladen!",
+
+  // Media Info
+  file: "Datei",
+  resolution: "Auflösung",
+  videoCodec: "Video-Codec",
+  audioCodec: "Audio-Codec",
+  fps: "FPS",
+  videoBitrate: "Video-Bitrate",
+  audioBitrate: "Audio-Bitrate",
+  duration: "Dauer",
+  fileSize: "Dateigröße",
+
+  // Settings
   general: "Allgemein",
   video: "Video",
   language: "Sprache",
+  deinterlace: "Deinterlace",
   defaultVolume: "Standardlautstärke",
   defaultSpeed: "Standardgeschwindigkeit",
   rememberPosition: "Position Merken",
@@ -55,10 +86,23 @@ export default {
   normalization: "Normalisierung",
   equalizer: "Equalizer",
   restoreDefaults: "Standardwerte Wiederherstellen",
+  apiKey: "API Key",
+  username: "Benutzername",
+  password: "Passwort",
+
+  // VideoControls
   previous: "Vorheriges",
   next: "Nächstes",
   fullscreen: "Vollbild",
   playbackSpeed: "Wiedergabegeschwindigkeit",
+
+  // Window
+  menu: "Menü",
+  minimize: "Minimieren",
+  maximize: "Maximieren",
+  close: "Schließen",
+
+  // Page
   dropToPlay: "Datei zum Abspielen ablegen",
   welcomeTitle: "Hayamiru (速観)",
   welcomeSubtitle: "Datei hier ablegen oder drücken Sie",

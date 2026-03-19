@@ -43,8 +43,7 @@
     </svg>
   </button>
   {#if open}
-    <!-- svelte-ignore a11y_no_static_element_interactions -->
-    <div class="s-drop-list" onclick={(e) => e.stopPropagation()}>
+    <div class="s-drop-list" role="listbox" tabindex="-1" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.key === "Escape" && (open = false)}>
       {#each items as item}
         <button
           class="s-drop-item {item === value ? 'text-blue-400' : 'text-white/80'}"
@@ -61,7 +60,7 @@
     width: 100%; display: flex; align-items: center; justify-content: space-between;
     background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1);
     border-radius: 6px; color: rgba(255,255,255,0.9); padding: 6px 10px;
-    font-size: 13px; cursor: pointer;
+    font-size: 13px;
   }
   .s-drop-btn:hover { background: rgba(255,255,255,0.12); }
   .s-drop-list {
@@ -72,7 +71,7 @@
   }
   .s-drop-item {
     width: 100%; text-align: left; padding: 6px 12px; font-size: 13px;
-    background: none; border: none; cursor: pointer; color: inherit;
+    background: none; border: none;
   }
   .s-drop-item:hover { background: rgba(255,255,255,0.1); }
 </style>

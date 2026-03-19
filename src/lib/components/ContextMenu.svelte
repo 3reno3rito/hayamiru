@@ -212,7 +212,6 @@
     background: none;
     border: none;
     color: rgba(255, 255, 255, 0.9);
-    cursor: pointer;
     font-size: 13px;
     white-space: nowrap;
   }
@@ -226,7 +225,6 @@
     background: none;
     border: none;
     color: rgba(255, 255, 255, 0.5);
-    cursor: pointer;
     font-size: 13px;
     white-space: nowrap;
   }

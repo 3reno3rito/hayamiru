@@ -1,5 +1,6 @@
 import type { Dict } from "./index.svelte";
 export default {
+  // Context menu
   openFile: "Ouvrir un Fichier",
   pause: "Pause",
   play: "Lecture",
@@ -18,6 +19,8 @@ export default {
   alwaysOnTop: "Toujours au Premier Plan",
   off: "Désactivé",
   auto: "Auto",
+
+  // Panels
   noSubtitleTracks: "Aucune piste de sous-titres",
   noAudioTracks: "Aucune piste audio",
   loadExternalFile: "Charger un fichier externe...",
@@ -35,14 +38,42 @@ export default {
   position: "Position",
   text: "Texte",
   border: "Bordure",
+
+  // Playlist
   playlist: "Liste de Lecture",
   emptyPlaylist: "Liste de lecture vide",
   addFiles: "+ Fichiers",
   addFolder: "+ Dossier",
   clear: "Vider",
+  remove: "Supprimer",
+  shuffle: "Aléatoire",
+  repeat: "Répéter",
+  items: "éléments",
+
+  // Subtitle search
+  searchOnline: "Rechercher en ligne...",
+  searchOnlineTitle: "Rechercher en Ligne",
+  searching: "Recherche en cours...",
+  noResults: "Aucun résultat",
+  downloading: "Téléchargement...",
+  downloaded: "Téléchargé !",
+
+  // Media Info
+  file: "Fichier",
+  resolution: "Résolution",
+  videoCodec: "Codec Vidéo",
+  audioCodec: "Codec Audio",
+  fps: "FPS",
+  videoBitrate: "Débit Vidéo",
+  audioBitrate: "Débit Audio",
+  duration: "Durée",
+  fileSize: "Taille du Fichier",
+
+  // Settings
   general: "Général",
   video: "Vidéo",
   language: "Langue",
+  deinterlace: "Désentrelacer",
   defaultVolume: "Volume par Défaut",
   defaultSpeed: "Vitesse par Défaut",
   rememberPosition: "Mémoriser la Position",
@@ -55,10 +86,23 @@ export default {
   normalization: "Normalisation",
   equalizer: "Égaliseur",
   restoreDefaults: "Restaurer les Valeurs par Défaut",
+  apiKey: "API Key",
+  username: "Identifiant",
+  password: "Mot de passe",
+
+  // VideoControls
   previous: "Précédent",
   next: "Suivant",
   fullscreen: "Plein Écran",
   playbackSpeed: "Vitesse de lecture",
+
+  // Window
+  menu: "Menu",
+  minimize: "Réduire",
+  maximize: "Agrandir",
+  close: "Fermer",
+
+  // Page
   dropToPlay: "Déposez le fichier pour le lire",
   welcomeTitle: "Hayamiru (速観)",
   welcomeSubtitle: "Déposez un fichier ici ou appuyez sur",

@@ -6,6 +6,8 @@
   --font-sans: "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, sans-serif;
 }
 
+button { cursor: pointer; }
+
 html, body {
   margin: 0;
   padding: 0;
@@ -24,7 +26,6 @@ html, body {
   border: none;
   background: transparent;
   color: rgba(255, 255, 255, 0.85);
-  cursor: pointer;
   border-radius: 4px;
   transition: all 0.15s ease;
 }

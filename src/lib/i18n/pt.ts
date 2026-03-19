@@ -1,5 +1,6 @@
 import type { Dict } from "./index.svelte";
 export default {
+  // Context menu
   openFile: "Abrir Arquivo",
   pause: "Pausar",
   play: "Reproduzir",
@@ -18,6 +19,8 @@ export default {
   alwaysOnTop: "Sempre no Topo",
   off: "Desligado",
   auto: "Auto",
+
+  // Panels
   noSubtitleTracks: "Sem faixas de legenda",
   noAudioTracks: "Sem faixas de áudio",
   loadExternalFile: "Carregar arquivo externo...",
@@ -35,14 +38,42 @@ export default {
   position: "Posição",
   text: "Texto",
   border: "Borda",
+
+  // Playlist
   playlist: "Playlist",
   emptyPlaylist: "Playlist vazia",
   addFiles: "+ Arquivos",
   addFolder: "+ Pasta",
   clear: "Limpar",
+  remove: "Remover",
+  shuffle: "Aleatório",
+  repeat: "Repetir",
+  items: "itens",
+
+  // Subtitle search
+  searchOnline: "Pesquisar online...",
+  searchOnlineTitle: "Pesquisar Online",
+  searching: "Pesquisando...",
+  noResults: "Sem resultados",
+  downloading: "Baixando...",
+  downloaded: "Baixado!",
+
+  // Media Info
+  file: "Arquivo",
+  resolution: "Resolução",
+  videoCodec: "Codec de Vídeo",
+  audioCodec: "Codec de Áudio",
+  fps: "FPS",
+  videoBitrate: "Bitrate de Vídeo",
+  audioBitrate: "Bitrate de Áudio",
+  duration: "Duração",
+  fileSize: "Tamanho do Arquivo",
+
+  // Settings
   general: "Geral",
   video: "Vídeo",
   language: "Idioma",
+  deinterlace: "Desentrelaçar",
   defaultVolume: "Volume Padrão",
   defaultSpeed: "Velocidade Padrão",
   rememberPosition: "Lembrar Posição",
@@ -55,10 +86,23 @@ export default {
   normalization: "Normalização",
   equalizer: "Equalizador",
   restoreDefaults: "Restaurar Padrões",
+  apiKey: "API Key",
+  username: "Usuário",
+  password: "Senha",
+
+  // VideoControls
   previous: "Anterior",
   next: "Próximo",
   fullscreen: "Tela Cheia",
   playbackSpeed: "Velocidade de reprodução",
+
+  // Window
+  menu: "Menu",
+  minimize: "Minimizar",
+  maximize: "Maximizar",
+  close: "Fechar",
+
+  // Page
   dropToPlay: "Solte o arquivo para reproduzir",
   welcomeTitle: "Hayamiru (速観)",
   welcomeSubtitle: "Solte um arquivo aqui ou pressione",

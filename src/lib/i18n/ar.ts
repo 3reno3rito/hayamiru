@@ -1,5 +1,6 @@
 import type { Dict } from "./index.svelte";
 export default {
+  // Context menu
   openFile: "فتح ملف",
   pause: "إيقاف مؤقت",
   play: "تشغيل",
@@ -18,6 +19,8 @@ export default {
   alwaysOnTop: "دائمًا في المقدمة",
   off: "إيقاف",
   auto: "تلقائي",
+
+  // Panels
   noSubtitleTracks: "لا توجد مسارات ترجمة",
   noAudioTracks: "لا توجد مسارات صوتية",
   loadExternalFile: "تحميل ملف خارجي...",
@@ -35,14 +38,42 @@ export default {
   position: "الموضع",
   text: "النص",
   border: "الحدود",
+
+  // Playlist
   playlist: "قائمة التشغيل",
   emptyPlaylist: "قائمة تشغيل فارغة",
   addFiles: "+ ملفات",
   addFolder: "+ مجلد",
   clear: "مسح",
+  remove: "إزالة",
+  shuffle: "خلط",
+  repeat: "تكرار",
+  items: "عناصر",
+
+  // Subtitle search
+  searchOnline: "البحث عبر الإنترنت...",
+  searchOnlineTitle: "البحث عبر الإنترنت",
+  searching: "جارٍ البحث...",
+  noResults: "لا توجد نتائج",
+  downloading: "جارٍ التحميل...",
+  downloaded: "تم التحميل!",
+
+  // Media Info
+  file: "ملف",
+  resolution: "الدقة",
+  videoCodec: "ترميز الفيديو",
+  audioCodec: "ترميز الصوت",
+  fps: "FPS",
+  videoBitrate: "معدل بت الفيديو",
+  audioBitrate: "معدل بت الصوت",
+  duration: "المدة",
+  fileSize: "حجم الملف",
+
+  // Settings
   general: "عام",
   video: "الفيديو",
   language: "اللغة",
+  deinterlace: "إزالة التشابك",
   defaultVolume: "مستوى الصوت الافتراضي",
   defaultSpeed: "السرعة الافتراضية",
   rememberPosition: "تذكّر الموضع",
@@ -55,10 +86,23 @@ export default {
   normalization: "التسوية",
   equalizer: "المعادل الصوتي",
   restoreDefaults: "استعادة الافتراضيات",
+  apiKey: "API Key",
+  username: "اسم المستخدم",
+  password: "كلمة المرور",
+
+  // VideoControls
   previous: "السابق",
   next: "التالي",
   fullscreen: "ملء الشاشة",
   playbackSpeed: "سرعة التشغيل",
+
+  // Window
+  menu: "القائمة",
+  minimize: "تصغير",
+  maximize: "تكبير",
+  close: "إغلاق",
+
+  // Page
   dropToPlay: "أسقط ملفًا هنا للتشغيل",
   welcomeTitle: "Hayamiru (速観)",
   welcomeSubtitle: "أسقط ملفًا هنا أو اضغط",

@@ -1,5 +1,6 @@
 import type { Dict } from "./index.svelte";
 export default {
+  // Context menu
   openFile: "Apri File",
   pause: "Pausa",
   play: "Riproduci",
@@ -18,6 +19,8 @@ export default {
   alwaysOnTop: "Sempre in Primo Piano",
   off: "Spento",
   auto: "Auto",
+
+  // Panels
   noSubtitleTracks: "Nessuna traccia sottotitoli",
   noAudioTracks: "Nessuna traccia audio",
   loadExternalFile: "Carica file esterno...",
@@ -35,14 +38,42 @@ export default {
   position: "Posizione",
   text: "Testo",
   border: "Bordo",
+
+  // Playlist
   playlist: "Playlist",
   emptyPlaylist: "Playlist vuota",
   addFiles: "+ File",
   addFolder: "+ Cartella",
   clear: "Svuota",
+  remove: "Rimuovi",
+  shuffle: "Casuale",
+  repeat: "Ripeti",
+  items: "elementi",
+
+  // Subtitle search
+  searchOnline: "Cerca online...",
+  searchOnlineTitle: "Cerca Online",
+  searching: "Ricerca in corso...",
+  noResults: "Nessun risultato",
+  downloading: "Download in corso...",
+  downloaded: "Scaricato!",
+
+  // Media Info
+  file: "File",
+  resolution: "Risoluzione",
+  videoCodec: "Codec Video",
+  audioCodec: "Codec Audio",
+  fps: "FPS",
+  videoBitrate: "Bitrate Video",
+  audioBitrate: "Bitrate Audio",
+  duration: "Durata",
+  fileSize: "Dimensione File",
+
+  // Settings
   general: "Generale",
   video: "Video",
   language: "Lingua",
+  deinterlace: "Deinterlaccia",
   defaultVolume: "Volume Predefinito",
   defaultSpeed: "Velocità Predefinita",
   rememberPosition: "Ricorda Posizione",
@@ -55,10 +86,23 @@ export default {
   normalization: "Normalizzazione",
   equalizer: "Equalizzatore",
   restoreDefaults: "Ripristina Valori Predefiniti",
+  apiKey: "API Key",
+  username: "Nome Utente",
+  password: "Password",
+
+  // VideoControls
   previous: "Precedente",
   next: "Successivo",
   fullscreen: "Schermo Intero",
   playbackSpeed: "Velocità di riproduzione",
+
+  // Window
+  menu: "Menu",
+  minimize: "Riduci a icona",
+  maximize: "Ingrandisci",
+  close: "Chiudi",
+
+  // Page
   dropToPlay: "Rilascia il file per riprodurre",
   welcomeTitle: "Hayamiru (速観)",
   welcomeSubtitle: "Rilascia un file qui o premi",

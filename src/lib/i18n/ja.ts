@@ -1,5 +1,6 @@
 import type { Dict } from "./index.svelte";
 export default {
+  // Context menu
   openFile: "ファイルを開く",
   pause: "一時停止",
   play: "再生",
@@ -18,6 +19,8 @@ export default {
   alwaysOnTop: "常に最前面",
   off: "オフ",
   auto: "自動",
+
+  // Panels
   noSubtitleTracks: "字幕トラックがありません",
   noAudioTracks: "音声トラックがありません",
   loadExternalFile: "外部ファイルを読み込む...",
@@ -35,14 +38,42 @@ export default {
   position: "位置",
   text: "文字",
   border: "縁取り",
+
+  // Playlist
   playlist: "プレイリスト",
   emptyPlaylist: "プレイリストは空です",
   addFiles: "+ ファイル",
   addFolder: "+ フォルダ",
   clear: "クリア",
+  remove: "削除",
+  shuffle: "シャッフル",
+  repeat: "リピート",
+  items: "件",
+
+  // Subtitle search
+  searchOnline: "オンラインで検索...",
+  searchOnlineTitle: "オンライン検索",
+  searching: "検索中...",
+  noResults: "結果なし",
+  downloading: "ダウンロード中...",
+  downloaded: "ダウンロード完了!",
+
+  // Media Info
+  file: "ファイル",
+  resolution: "解像度",
+  videoCodec: "映像コーデック",
+  audioCodec: "音声コーデック",
+  fps: "FPS",
+  videoBitrate: "映像ビットレート",
+  audioBitrate: "音声ビットレート",
+  duration: "再生時間",
+  fileSize: "ファイルサイズ",
+
+  // Settings
   general: "一般",
   video: "映像",
   language: "言語",
+  deinterlace: "デインターレース",
   defaultVolume: "既定の音量",
   defaultSpeed: "既定の速度",
   rememberPosition: "再生位置を記憶",
@@ -55,10 +86,23 @@ export default {
   normalization: "ノーマライズ",
   equalizer: "イコライザー",
   restoreDefaults: "初期値に戻す",
+  apiKey: "API Key",
+  username: "ユーザー名",
+  password: "パスワード",
+
+  // VideoControls
   previous: "前へ",
   next: "次へ",
   fullscreen: "フルスクリーン",
   playbackSpeed: "再生速度",
+
+  // Window
+  menu: "メニュー",
+  minimize: "最小化",
+  maximize: "最大化",
+  close: "閉じる",
+
+  // Page
   dropToPlay: "ファイルをドロップして再生",
   welcomeTitle: "Hayamiru (速観)",
   welcomeSubtitle: "ここにファイルをドロップするか",

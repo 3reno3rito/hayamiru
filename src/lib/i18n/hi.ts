@@ -1,5 +1,6 @@
 import type { Dict } from "./index.svelte";
 export default {
+  // Context menu
   openFile: "फ़ाइल खोलें",
   pause: "रोकें",
   play: "चलाएँ",
@@ -18,6 +19,8 @@ export default {
   alwaysOnTop: "हमेशा ऊपर",
   off: "बंद",
   auto: "स्वचालित",
+
+  // Panels
   noSubtitleTracks: "कोई उपशीर्षक ट्रैक नहीं",
   noAudioTracks: "कोई ऑडियो ट्रैक नहीं",
   loadExternalFile: "बाहरी फ़ाइल लोड करें...",
@@ -35,14 +38,42 @@ export default {
   position: "स्थिति",
   text: "टेक्स्ट",
   border: "बॉर्डर",
+
+  // Playlist
   playlist: "प्लेलिस्ट",
   emptyPlaylist: "खाली प्लेलिस्ट",
   addFiles: "+ फ़ाइलें",
   addFolder: "+ फ़ोल्डर",
   clear: "साफ़ करें",
+  remove: "हटाएँ",
+  shuffle: "शफ़ल",
+  repeat: "दोहराएँ",
+  items: "आइटम",
+
+  // Subtitle search
+  searchOnline: "ऑनलाइन खोजें...",
+  searchOnlineTitle: "ऑनलाइन खोजें",
+  searching: "खोज रहे हैं...",
+  noResults: "कोई परिणाम नहीं",
+  downloading: "डाउनलोड हो रहा है...",
+  downloaded: "डाउनलोड हो गया!",
+
+  // Media Info
+  file: "फ़ाइल",
+  resolution: "रिज़ॉल्यूशन",
+  videoCodec: "वीडियो कोडेक",
+  audioCodec: "ऑडियो कोडेक",
+  fps: "FPS",
+  videoBitrate: "वीडियो बिटरेट",
+  audioBitrate: "ऑडियो बिटरेट",
+  duration: "अवधि",
+  fileSize: "फ़ाइल आकार",
+
+  // Settings
   general: "सामान्य",
   video: "वीडियो",
   language: "भाषा",
+  deinterlace: "डीइंटरलेस",
   defaultVolume: "डिफ़ॉल्ट वॉल्यूम",
   defaultSpeed: "डिफ़ॉल्ट गति",
   rememberPosition: "स्थिति याद रखें",
@@ -55,10 +86,23 @@ export default {
   normalization: "सामान्यीकरण",
   equalizer: "इक्वलाइज़र",
   restoreDefaults: "डिफ़ॉल्ट पुनर्स्थापित करें",
+  apiKey: "API Key",
+  username: "उपयोगकर्ता नाम",
+  password: "पासवर्ड",
+
+  // VideoControls
   previous: "पिछला",
   next: "अगला",
   fullscreen: "पूर्ण स्क्रीन",
   playbackSpeed: "प्लेबैक गति",
+
+  // Window
+  menu: "मेनू",
+  minimize: "छोटा करें",
+  maximize: "बड़ा करें",
+  close: "बंद करें",
+
+  // Page
   dropToPlay: "चलाने के लिए फ़ाइल यहाँ छोड़ें",
   welcomeTitle: "Hayamiru (速観)",
   welcomeSubtitle: "यहाँ फ़ाइल छोड़ें या दबाएँ",

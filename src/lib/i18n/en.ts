@@ -44,11 +44,35 @@ export default {
   addFiles: "+ Files",
   addFolder: "+ Folder",
   clear: "Clear",
+  remove: "Remove",
+  shuffle: "Shuffle",
+  repeat: "Repeat",
+  items: "items",
+
+  // Subtitle search
+  searchOnline: "Search online...",
+  searchOnlineTitle: "Search Online",
+  searching: "Searching...",
+  noResults: "No results",
+  downloading: "Downloading...",
+  downloaded: "Downloaded!",
+
+  // Media Info
+  file: "File",
+  resolution: "Resolution",
+  videoCodec: "Video Codec",
+  audioCodec: "Audio Codec",
+  fps: "FPS",
+  videoBitrate: "Video Bitrate",
+  audioBitrate: "Audio Bitrate",
+  duration: "Duration",
+  fileSize: "File Size",
 
   // Settings
   general: "General",
   video: "Video",
   language: "Language",
+  deinterlace: "Deinterlace",
   defaultVolume: "Default Volume",
   defaultSpeed: "Default Speed",
   rememberPosition: "Remember Position",
@@ -61,12 +85,21 @@ export default {
   normalization: "Normalization",
   equalizer: "Equalizer",
   restoreDefaults: "Restore Defaults",
+  apiKey: "API Key",
+  username: "Username",
+  password: "Password",
 
   // VideoControls
   previous: "Previous",
   next: "Next",
   fullscreen: "Fullscreen",
   playbackSpeed: "Playback speed",
+
+  // Window
+  menu: "Menu",
+  minimize: "Minimize",
+  maximize: "Maximize",
+  close: "Close",
 
   // Page
   dropToPlay: "Drop file to play",

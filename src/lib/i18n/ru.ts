@@ -1,5 +1,6 @@
 import type { Dict } from "./index.svelte";
 export default {
+  // Context menu
   openFile: "Открыть файл",
   pause: "Пауза",
   play: "Воспроизвести",
@@ -18,6 +19,8 @@ export default {
   alwaysOnTop: "Поверх всех окон",
   off: "Выкл",
   auto: "Авто",
+
+  // Panels
   noSubtitleTracks: "Нет дорожек субтитров",
   noAudioTracks: "Нет аудиодорожек",
   loadExternalFile: "Загрузить внешний файл...",
@@ -35,14 +38,42 @@ export default {
   position: "Положение",
   text: "Текст",
   border: "Обводка",
+
+  // Playlist
   playlist: "Плейлист",
   emptyPlaylist: "Плейлист пуст",
   addFiles: "+ Файлы",
   addFolder: "+ Папка",
   clear: "Очистить",
+  remove: "Удалить",
+  shuffle: "Перемешать",
+  repeat: "Повтор",
+  items: "элементов",
+
+  // Subtitle search
+  searchOnline: "Поиск в интернете...",
+  searchOnlineTitle: "Поиск в интернете",
+  searching: "Поиск...",
+  noResults: "Нет результатов",
+  downloading: "Загрузка...",
+  downloaded: "Загружено!",
+
+  // Media Info
+  file: "Файл",
+  resolution: "Разрешение",
+  videoCodec: "Видеокодек",
+  audioCodec: "Аудиокодек",
+  fps: "FPS",
+  videoBitrate: "Битрейт видео",
+  audioBitrate: "Битрейт аудио",
+  duration: "Длительность",
+  fileSize: "Размер файла",
+
+  // Settings
   general: "Основные",
   video: "Видео",
   language: "Язык",
+  deinterlace: "Деинтерлейсинг",
   defaultVolume: "Громкость по умолчанию",
   defaultSpeed: "Скорость по умолчанию",
   rememberPosition: "Запоминать позицию",
@@ -55,10 +86,23 @@ export default {
   normalization: "Нормализация",
   equalizer: "Эквалайзер",
   restoreDefaults: "Сбросить настройки",
+  apiKey: "API Key",
+  username: "Имя пользователя",
+  password: "Пароль",
+
+  // VideoControls
   previous: "Предыдущий",
   next: "Следующий",
   fullscreen: "Полный экран",
   playbackSpeed: "Скорость воспроизведения",
+
+  // Window
+  menu: "Меню",
+  minimize: "Свернуть",
+  maximize: "Развернуть",
+  close: "Закрыть",
+
+  // Page
   dropToPlay: "Перетащите файл для воспроизведения",
   welcomeTitle: "Hayamiru (速観)",
   welcomeSubtitle: "Перетащите файл сюда или нажмите",

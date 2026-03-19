@@ -1,5 +1,6 @@
 import type { Dict } from "./index.svelte";
 export default {
+  // Context menu
   openFile: "파일 열기",
   pause: "일시정지",
   play: "재생",
@@ -18,6 +19,8 @@ export default {
   alwaysOnTop: "항상 위에",
   off: "끔",
   auto: "자동",
+
+  // Panels
   noSubtitleTracks: "자막 트랙 없음",
   noAudioTracks: "오디오 트랙 없음",
   loadExternalFile: "외부 파일 불러오기...",
@@ -35,14 +38,42 @@ export default {
   position: "위치",
   text: "글자",
   border: "테두리",
+
+  // Playlist
   playlist: "재생목록",
   emptyPlaylist: "재생목록이 비어 있습니다",
   addFiles: "+ 파일",
   addFolder: "+ 폴더",
   clear: "비우기",
+  remove: "제거",
+  shuffle: "셔플",
+  repeat: "반복",
+  items: "항목",
+
+  // Subtitle search
+  searchOnline: "온라인 검색...",
+  searchOnlineTitle: "온라인 검색",
+  searching: "검색 중...",
+  noResults: "결과 없음",
+  downloading: "다운로드 중...",
+  downloaded: "다운로드 완료!",
+
+  // Media Info
+  file: "파일",
+  resolution: "해상도",
+  videoCodec: "비디오 코덱",
+  audioCodec: "오디오 코덱",
+  fps: "FPS",
+  videoBitrate: "비디오 비트레이트",
+  audioBitrate: "오디오 비트레이트",
+  duration: "재생 시간",
+  fileSize: "파일 크기",
+
+  // Settings
   general: "일반",
   video: "영상",
   language: "언어",
+  deinterlace: "디인터레이스",
   defaultVolume: "기본 음량",
   defaultSpeed: "기본 속도",
   rememberPosition: "재생 위치 기억",
@@ -55,10 +86,23 @@ export default {
   normalization: "정규화",
   equalizer: "이퀄라이저",
   restoreDefaults: "기본값 복원",
+  apiKey: "API Key",
+  username: "사용자 이름",
+  password: "비밀번호",
+
+  // VideoControls
   previous: "이전",
   next: "다음",
   fullscreen: "전체 화면",
   playbackSpeed: "재생 속도",
+
+  // Window
+  menu: "메뉴",
+  minimize: "최소화",
+  maximize: "최대화",
+  close: "닫기",
+
+  // Page
   dropToPlay: "파일을 놓아서 재생",
   welcomeTitle: "Hayamiru (速観)",
   welcomeSubtitle: "여기에 파일을 놓거나",

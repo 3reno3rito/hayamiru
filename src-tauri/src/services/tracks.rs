@@ -73,6 +73,7 @@ impl TracksService {
         mpv.set::<&str>("sub-border-color", &style.border_color)?;
         mpv.set("sub-border-size", style.border_size as f64)?;
         mpv.set("sub-pos", style.position as f64)?;
+        mpv.set::<&str>("sub-bold", if style.bold { "yes" } else { "no" })?;
         Ok(())
     }
 }
@@ -85,4 +86,6 @@ pub struct SubStyle {
     pub border_color: String,
     pub border_size: u32,
     pub position: u32,
+    #[serde(default)]
+    pub bold: bool,
 }

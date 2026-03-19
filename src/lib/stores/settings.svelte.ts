@@ -22,6 +22,7 @@ export interface SubtitleStyleSettings {
   border_color: string;
   border_size: number;
   position: number;
+  bold: boolean;
 }
 
 const defaultSubStyle: SubtitleStyleSettings = {
@@ -47,6 +48,7 @@ class SettingsStore {
   subBorderColor = $state("#000000");
   subBorderSize = $state(3);
   subPosition = $state(100);
+  subBold = $state(false);
 
   #loaded = false;
   #saveTimer: ReturnType<typeof setTimeout> | null = null;
@@ -69,6 +71,7 @@ class SettingsStore {
       this.subBorderColor = s.subtitle_style.border_color;
       this.subBorderSize = s.subtitle_style.border_size;
       this.subPosition = s.subtitle_style.position;
+      this.subBold = s.subtitle_style.bold ?? false;
       setLocale(s.language);
       this.#loaded = true;
     } catch {}
@@ -86,7 +89,7 @@ class SettingsStore {
     setSubStyle({
       font: this.subFont, size: this.subSize, color: this.subColor,
       border_color: this.subBorderColor, border_size: this.subBorderSize,
-      position: this.subPosition,
+      position: this.subPosition, bold: this.subBold,
     });
     this.save();
   }
@@ -98,6 +101,7 @@ class SettingsStore {
     this.subBorderColor = defaultSubStyle.border_color;
     this.subBorderSize = defaultSubStyle.border_size;
     this.subPosition = defaultSubStyle.position;
+    this.subBold = false;
     this.applySubStyle();
   }
 
@@ -118,7 +122,7 @@ class SettingsStore {
       subtitle_style: {
         font: this.subFont, size: this.subSize, color: this.subColor,
         border_color: this.subBorderColor, border_size: this.subBorderSize,
-        position: this.subPosition,
+        position: this.subPosition, bold: this.subBold,
       },
     };
   }

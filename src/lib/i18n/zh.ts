@@ -1,5 +1,6 @@
 import type { Dict } from "./index.svelte";
 export default {
+  // Context menu
   openFile: "打开文件",
   pause: "暂停",
   play: "播放",
@@ -18,6 +19,8 @@ export default {
   alwaysOnTop: "置顶",
   off: "关",
   auto: "自动",
+
+  // Panels
   noSubtitleTracks: "无字幕轨道",
   noAudioTracks: "无音频轨道",
   loadExternalFile: "加载外部文件...",
@@ -35,14 +38,42 @@ export default {
   position: "位置",
   text: "文字",
   border: "边框",
+
+  // Playlist
   playlist: "播放列表",
   emptyPlaylist: "播放列表为空",
   addFiles: "+ 文件",
   addFolder: "+ 文件夹",
   clear: "清空",
+  remove: "移除",
+  shuffle: "随机播放",
+  repeat: "重复",
+  items: "项",
+
+  // Subtitle search
+  searchOnline: "在线搜索...",
+  searchOnlineTitle: "在线搜索",
+  searching: "搜索中...",
+  noResults: "无结果",
+  downloading: "下载中...",
+  downloaded: "下载完成!",
+
+  // Media Info
+  file: "文件",
+  resolution: "分辨率",
+  videoCodec: "视频编解码器",
+  audioCodec: "音频编解码器",
+  fps: "FPS",
+  videoBitrate: "视频比特率",
+  audioBitrate: "音频比特率",
+  duration: "时长",
+  fileSize: "文件大小",
+
+  // Settings
   general: "常规",
   video: "视频",
   language: "语言",
+  deinterlace: "反交错",
   defaultVolume: "默认音量",
   defaultSpeed: "默认速度",
   rememberPosition: "记住播放位置",
@@ -55,10 +86,23 @@ export default {
   normalization: "音频标准化",
   equalizer: "均衡器",
   restoreDefaults: "恢复默认",
+  apiKey: "API Key",
+  username: "用户名",
+  password: "密码",
+
+  // VideoControls
   previous: "上一个",
   next: "下一个",
   fullscreen: "全屏",
   playbackSpeed: "播放速度",
+
+  // Window
+  menu: "菜单",
+  minimize: "最小化",
+  maximize: "最大化",
+  close: "关闭",
+
+  // Page
   dropToPlay: "拖放文件以播放",
   welcomeTitle: "Hayamiru (速観)",
   welcomeSubtitle: "将文件拖放到此处或按",
