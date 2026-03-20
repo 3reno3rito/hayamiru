@@ -12,6 +12,7 @@
   import { setAspectRatio, getAspectRatio, setVideoZoom, setVideoPan, getVideoZoomPan, resetVideoZoomPan } from "$lib/bindings/video";
   import { toggleFullscreen } from "$lib/bindings/window";
   import { getTracks, selectSubtitle, selectAudioTrack } from "$lib/bindings/tracks";
+  import { keybindings } from "$lib/stores/keybindings.svelte";
   import { playlistNext, playlistPrev } from "$lib/bindings/playlist";
   import TitleBar from "$lib/components/TitleBar.svelte";
   import VideoControls from "$lib/components/VideoControls.svelte";
@@ -121,50 +122,54 @@
     } catch {}
   }
 
+  const actionHandlers: Record<string, () => void> = {
+    togglePause: () => { if (player.duration > 0) player.playing = !player.playing; togglePause(); },
+    seekForward: () => seekRelative(5),
+    seekForwardLong: () => seekRelative(30),
+    seekBack: () => seekRelative(-5),
+    seekBackLong: () => seekRelative(-30),
+    nextFile: () => playlistNext().catch(() => {}),
+    prevFile: () => playlistPrev().catch(() => {}),
+    frameNext: () => frameStep().catch(() => {}),
+    framePrev: () => frameBackStep().catch(() => {}),
+    speedUp: () => { player.speed = Math.min(4, +(player.speed + 0.25).toFixed(2)); setSpeed(player.speed); },
+    speedDown: () => { player.speed = Math.max(0.25, +(player.speed - 0.25).toFixed(2)); setSpeed(player.speed); },
+    abLoop: () => toggleAbLoop().catch(() => {}),
+    volumeUp: () => { player.volume = Math.min(100, player.volume + 5); setVolume(player.volume); },
+    volumeDown: () => { player.volume = Math.max(0, player.volume - 5); setVolume(player.volume); },
+    mute: () => { player.muted = !player.muted; setVolume(player.muted ? 0 : player.volume); },
+    fullscreen: () => toggleFullscreen(),
+    screenshot: () => screenshot().catch(() => {}),
+    aspectRatio: () => cycleRatio(),
+    cycleSub: () => cycleTrack("sub"),
+    cycleAudio: () => cycleTrack("audio"),
+    openFile: () => handleOpenFile(),
+    openUrl: () => handleOpenUrl(),
+    mediaInfo: () => openPanel("info"),
+  };
+
   function handleKeyDown(e: KeyboardEvent) {
     if (e.target instanceof HTMLInputElement) return;
 
-    switch (e.key) {
-      case " ": e.preventDefault(); if (player.duration > 0) player.playing = !player.playing; togglePause(); break;
-      case "f": case "F": case "F11": e.preventDefault(); toggleFullscreen(); break;
-      case "ArrowRight": seekRelative(e.shiftKey ? 30 : 5); break;
-      case "ArrowLeft": seekRelative(e.shiftKey ? -30 : -5); break;
-      case "ArrowUp": e.preventDefault(); player.volume = Math.min(100, player.volume + 5); setVolume(player.volume); break;
-      case "ArrowDown": e.preventDefault(); player.volume = Math.max(0, player.volume - 5); setVolume(player.volume); break;
-      case "m": case "M": player.muted = !player.muted; setVolume(player.muted ? 0 : player.volume); break;
-      case "v": case "V": cycleTrack("sub"); break;
-      case "a": case "A": cycleTrack("audio"); break;
-      case "n": case "N": playlistNext().catch(() => {}); break;
-      case "p": case "P": playlistPrev().catch(() => {}); break;
-      case "s": case "S": screenshot().catch(() => {}); break;
-      case ".": frameStep().catch(() => {}); break;
-      case ",": frameBackStep().catch(() => {}); break;
-      case "r": case "R": cycleRatio(); break;
-      case "l": case "L": toggleAbLoop().catch(() => {}); break;
-      case "+": case "=": player.speed = Math.min(4, +(player.speed + 0.25).toFixed(2)); setSpeed(player.speed); break;
-      case "-": player.speed = Math.max(0.25, +(player.speed - 0.25).toFixed(2)); setSpeed(player.speed); break;
-      case "i": case "I": openPanel("info"); break;
-      // Pan & Scan (numpad)
-      case "8": if (e.location === 3) { getVideoZoomPan().then(s => setVideoPan(s.pan_x, s.pan_y - 0.02)); } break;
-      case "2": if (e.location === 3) { getVideoZoomPan().then(s => setVideoPan(s.pan_x, s.pan_y + 0.02)); } break;
-      case "4": if (e.location === 3) { getVideoZoomPan().then(s => setVideoPan(s.pan_x + 0.02, s.pan_y)); } break;
-      case "6": if (e.location === 3) { getVideoZoomPan().then(s => setVideoPan(s.pan_x - 0.02, s.pan_y)); } break;
-      case "*": getVideoZoomPan().then(s => setVideoZoom(s.zoom + 0.1)); break;
-      case "/": getVideoZoomPan().then(s => setVideoZoom(s.zoom - 0.1)); break;
-      case "5": if (e.location === 3) { resetVideoZoomPan(); } break;
-      case "Escape":
-        if (infoPanel) { infoPanel = false; break; }
-        if (player.fullscreen) toggleFullscreen();
-        break;
+    // Numpad pan & scan (not rebindable)
+    if (e.location === 3) {
+      switch (e.key) {
+        case "8": getVideoZoomPan().then(s => setVideoPan(s.pan_x, s.pan_y - 0.02)); return;
+        case "2": getVideoZoomPan().then(s => setVideoPan(s.pan_x, s.pan_y + 0.02)); return;
+        case "4": getVideoZoomPan().then(s => setVideoPan(s.pan_x + 0.02, s.pan_y)); return;
+        case "6": getVideoZoomPan().then(s => setVideoPan(s.pan_x - 0.02, s.pan_y)); return;
+        case "5": resetVideoZoomPan(); return;
+      }
     }
+    if (e.key === "*") { getVideoZoomPan().then(s => setVideoZoom(s.zoom + 0.1)); return; }
+    if (e.key === "/") { getVideoZoomPan().then(s => setVideoZoom(s.zoom - 0.1)); return; }
+    if (e.key === "Escape") { if (infoPanel) { infoPanel = false; } else if (player.fullscreen) toggleFullscreen(); return; }
+    if (e.key === "F11") { e.preventDefault(); toggleFullscreen(); return; }
 
-    if (e.ctrlKey && e.key === "o") {
+    const action = keybindings.resolve(e);
+    if (action && actionHandlers[action]) {
       e.preventDefault();
-      handleOpenFile();
-    }
-    if (e.ctrlKey && e.key === "u") {
-      e.preventDefault();
-      handleOpenUrl();
+      actionHandlers[action]();
     }
   }
 

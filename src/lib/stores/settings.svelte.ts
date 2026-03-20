@@ -1,6 +1,7 @@
 import { invoke } from "@tauri-apps/api/core";
 import { setLocale } from "$lib/i18n/index.svelte";
 import { setSubStyle } from "$lib/bindings/tracks";
+import { keybindings } from "$lib/stores/keybindings.svelte";
 
 export interface PlayerSettings {
   volume: number;
@@ -13,6 +14,7 @@ export interface PlayerSettings {
   os_api_key: string;
   os_username: string;
   os_password: string;
+  keybindings: Record<string, string>;
 }
 
 export interface SubtitleStyleSettings {
@@ -72,6 +74,7 @@ class SettingsStore {
       this.subBorderSize = s.subtitle_style.border_size;
       this.subPosition = s.subtitle_style.position;
       this.subBold = s.subtitle_style.bold ?? false;
+      keybindings.loadFrom(s.keybindings ?? {});
       setLocale(s.language);
       this.#loaded = true;
     } catch {}
@@ -109,6 +112,7 @@ class SettingsStore {
     this.volume = 100; this.speed = 1.0;
     this.rememberPosition = true; this.autoPlay = true;
     this.language = "en"; setLocale("en");
+    keybindings.resetAll();
     this.resetSubStyle();
     this.save();
   }
@@ -119,6 +123,7 @@ class SettingsStore {
       remember_position: this.rememberPosition, auto_play: this.autoPlay,
       language: this.language, translate_lang: this.translateLang,
       os_api_key: this.osApiKey, os_username: this.osUsername, os_password: this.osPassword,
+      keybindings: keybindings.toJSON(),
       subtitle_style: {
         font: this.subFont, size: this.subSize, color: this.subColor,
         border_color: this.subBorderColor, border_size: this.subBorderSize,

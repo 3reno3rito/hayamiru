@@ -23,6 +23,8 @@ pub struct PlayerSettings {
     pub os_username: String,
     #[serde(default)]
     pub os_password: String,
+    #[serde(default)]
+    pub keybindings: std::collections::HashMap<String, String>,
 }
 
 fn default_translate_lang() -> String { "pt".into() }
@@ -77,6 +79,7 @@ impl Default for PlayerSettings {
             os_api_key: String::new(),
             os_username: String::new(),
             os_password: String::new(),
+            keybindings: std::collections::HashMap::new(),
         }
     }
 }

@@ -2,11 +2,28 @@
   import { setBrightness, setContrast, setSaturation, setVideoZoom, resetVideoZoomPan, toggleDeinterlace } from "$lib/bindings/video";
   import { setAudioNormalization, setAudioEqualizer, resetAudioEqualizer } from "$lib/bindings/audio-fx";
   import { settings, subFonts } from "$lib/stores/settings.svelte";
+  import { keybindings } from "$lib/stores/keybindings.svelte";
   import { t, setLocale } from "$lib/i18n/index.svelte";
   import Select from "./Select.svelte";
 
   let { visible = $bindable(false) }: { visible: boolean } = $props();
-  let tab = $state<"general" | "video" | "audio" | "subtitles">("general");
+  let tab = $state<"general" | "video" | "audio" | "subtitles" | "shortcuts">("general");
+  let rebinding = $state<string | null>(null);
+
+  function handleRebind(e: KeyboardEvent) {
+    if (!rebinding) return;
+    e.preventDefault(); e.stopPropagation();
+    if (e.key === "Escape") { rebinding = null; return; }
+    const parts: string[] = [];
+    if (e.ctrlKey) parts.push("Ctrl");
+    if (e.shiftKey) parts.push("Shift");
+    if (e.altKey) parts.push("Alt");
+    if (!["Control", "Shift", "Alt"].includes(e.key)) parts.push(e.key === " " ? "Space" : e.key);
+    if (parts.length === 0) return;
+    keybindings.setKey(rebinding, parts.join("+"));
+    rebinding = null;
+    settings.save();
+  }
 
   // Video (local — not persisted, applied directly to mpv)
   let brightness = $state(0);
@@ -36,6 +53,7 @@
     { id: "video" as const, get label() { return t().video; } },
     { id: "audio" as const, get label() { return t().audio; } },
     { id: "subtitles" as const, get label() { return t().subtitles; } },
+    { id: "shortcuts" as const, get label() { return t().shortcuts; } },
   ];
 
   function setLang(code: string) { settings.language = code; setLocale(code); settings.save(); }
@@ -211,6 +229,30 @@
             <label class="s-row"><span>{t().apiKey}</span><input type="text" class="s-input" bind:value={settings.osApiKey} onchange={() => settings.save()} placeholder={t().apiKey} /></label>
             <label class="s-row"><span>{t().username}</span><input type="text" class="s-input" bind:value={settings.osUsername} onchange={() => settings.save()} placeholder={t().username} /></label>
             <label class="s-row"><span>{t().password}</span><input type="password" class="s-input" bind:value={settings.osPassword} onchange={() => settings.save()} placeholder={t().password} /></label>
+          </div>
+        {:else if tab === "shortcuts"}
+          <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+          <div class="space-y-3" onkeydown={rebinding ? handleRebind : undefined}>
+            {#each [...new Set(keybindings.actions.map(a => a.category))] as category}
+              <div>
+                <span class="text-white/50 text-xs uppercase tracking-wide">{t()[category] ?? category}</span>
+                {#each keybindings.actions.filter(a => a.category === category) as action}
+                  <div class="s-row">
+                    <span class="flex-1">{t()[action.i18nKey] ?? action.i18nKey}</span>
+                    <button
+                      class="min-w-[100px] px-3 py-1 text-xs rounded border transition-all text-center {rebinding === action.id ? 'border-blue-400 bg-blue-500/20 text-blue-400' : 'border-white/10 bg-white/5 text-white/80 hover:bg-white/10'}"
+                      onclick={() => rebinding = action.id}
+                      onkeydown={rebinding === action.id ? handleRebind : undefined}
+                    >
+                      {rebinding === action.id ? t().pressKey : keybindings.constructor.keyLabel(keybindings.getKey(action.id))}
+                    </button>
+                  </div>
+                {/each}
+              </div>
+            {/each}
+            <button class="w-full py-2 text-xs text-white/50 hover:text-white/80 border border-white/10 rounded hover:bg-white/5 transition-colors" onclick={() => { keybindings.resetAll(); settings.save(); }}>
+              {t().resetShortcuts}
+            </button>
           </div>
         {/if}
       </div>
