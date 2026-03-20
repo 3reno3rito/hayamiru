@@ -9,7 +9,7 @@
     initPlayer, openFile, togglePause, seekRelative, setVolume, setSpeed, getPlaybackState,
     screenshot, frameStep, frameBackStep, toggleAbLoop,
   } from "$lib/bindings/playback";
-  import { setAspectRatio, getAspectRatio } from "$lib/bindings/video";
+  import { setAspectRatio, getAspectRatio, setVideoZoom, setVideoPan, getVideoZoomPan, resetVideoZoomPan } from "$lib/bindings/video";
   import { toggleFullscreen } from "$lib/bindings/window";
   import { getTracks, selectSubtitle, selectAudioTrack } from "$lib/bindings/tracks";
   import { playlistNext, playlistPrev } from "$lib/bindings/playlist";
@@ -144,6 +144,14 @@
       case "+": case "=": player.speed = Math.min(4, +(player.speed + 0.25).toFixed(2)); setSpeed(player.speed); break;
       case "-": player.speed = Math.max(0.25, +(player.speed - 0.25).toFixed(2)); setSpeed(player.speed); break;
       case "i": case "I": openPanel("info"); break;
+      // Pan & Scan (numpad)
+      case "8": if (e.location === 3) { getVideoZoomPan().then(s => setVideoPan(s.pan_x, s.pan_y - 0.02)); } break;
+      case "2": if (e.location === 3) { getVideoZoomPan().then(s => setVideoPan(s.pan_x, s.pan_y + 0.02)); } break;
+      case "4": if (e.location === 3) { getVideoZoomPan().then(s => setVideoPan(s.pan_x + 0.02, s.pan_y)); } break;
+      case "6": if (e.location === 3) { getVideoZoomPan().then(s => setVideoPan(s.pan_x - 0.02, s.pan_y)); } break;
+      case "*": getVideoZoomPan().then(s => setVideoZoom(s.zoom + 0.1)); break;
+      case "/": getVideoZoomPan().then(s => setVideoZoom(s.zoom - 0.1)); break;
+      case "5": if (e.location === 3) { resetVideoZoomPan(); } break;
       case "Escape":
         if (infoPanel) { infoPanel = false; break; }
         if (player.fullscreen) toggleFullscreen();
