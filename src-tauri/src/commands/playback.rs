@@ -60,7 +60,8 @@ pub async fn open_file(
     mpv_state: State<'_, MpvState>,
     app_state: State<'_, AppState>,
 ) -> Result<(), AppError> {
-    if !std::path::Path::new(&path).exists() {
+    let is_url = path.starts_with("http://") || path.starts_with("https://");
+    if !is_url && !std::path::Path::new(&path).exists() {
         return Err(AppError::FileNotFound(path));
     }
     let mpv = mpv_state.get()?;
@@ -88,8 +89,12 @@ pub async fn open_file(
         set_pending_resume(pos);
     }
 
-    // Load file + populate playlist with sibling media files
-    PlaylistService::open_with_siblings(mpv, &path)?;
+    // Load file (+ populate playlist with sibling media files for local files)
+    if is_url {
+        mpv.command(&["loadfile", &path, "replace"])?;
+    } else {
+        PlaylistService::open_with_siblings(mpv, &path)?;
+    }
 
     // Update state + recent files
     let title = std::path::Path::new(&path)

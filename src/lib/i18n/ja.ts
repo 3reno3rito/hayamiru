@@ -2,6 +2,7 @@ import type { Dict } from "./index.svelte";
 export default {
   // Context menu
   openFile: "ファイルを開く",
+  openUrl: "URLを開く",
   pause: "一時停止",
   play: "再生",
   stop: "停止",

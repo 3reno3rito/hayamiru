@@ -2,6 +2,7 @@ import type { Dict } from "./index.svelte";
 export default {
   // Context menu
   openFile: "फ़ाइल खोलें",
+  openUrl: "URL खोलें",
   pause: "रोकें",
   play: "चलाएँ",
   stop: "बंद करें",

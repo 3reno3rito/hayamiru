@@ -154,6 +154,15 @@
       e.preventDefault();
       handleOpenFile();
     }
+    if (e.ctrlKey && e.key === "u") {
+      e.preventDefault();
+      handleOpenUrl();
+    }
+  }
+
+  function handleOpenUrl() {
+    const url = prompt("URL:");
+    if (url?.trim()) { fileLoaded = true; openFile(url.trim()); }
   }
 
   async function handleOpenFile() {
@@ -226,6 +235,7 @@
     y={ctxY}
     onclose={() => ctxShow = false}
     onopen={handleOpenFile}
+    onopenurl={handleOpenUrl}
     onpanel={openPanel}
   />
 

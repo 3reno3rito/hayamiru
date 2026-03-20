@@ -1,6 +1,7 @@
 export default {
   // Context menu
   openFile: "Open File",
+  openUrl: "Open URL",
   pause: "Pause",
   play: "Play",
   stop: "Stop",

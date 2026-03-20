@@ -16,6 +16,7 @@
     y = 0,
     onclose,
     onopen,
+    onopenurl,
     onpanel,
   }: {
     show: boolean;
@@ -23,6 +24,7 @@
     y: number;
     onclose: () => void;
     onopen: () => void;
+    onopenurl: () => void;
     onpanel: (name: string) => void;
   } = $props();
 
@@ -120,6 +122,7 @@
   >
     {#if page === "main"}
       <button class="ctx-item" onclick={() => act(onopen)}>{t().openFile}<span class="ctx-key">Ctrl+O</span></button>
+      <button class="ctx-item" onclick={() => act(onopenurl)}>{t().openUrl}<span class="ctx-key">Ctrl+U</span></button>
       <div class="ctx-sep"></div>
       <button class="ctx-item" onclick={() => act(() => togglePause())}>
         {player.playing ? t().pause : t().play}<span class="ctx-key">Space</span>
