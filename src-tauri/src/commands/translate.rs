@@ -31,13 +31,6 @@ pub async fn translate_subtitles(
     let out_ext = if is_ass { "ass" } else { "srt" };
     let out_path = build_sub_path(&video_path, &target_lang, out_ext);
 
-    // Cached — just load
-    if Path::new(&out_path).exists() {
-        mpv.command(&["sub-add", &out_path, "auto"])?;
-        let _ = app.emit("translate:progress", TranslateProgress { current: 1, total: 1, done: true });
-        return Ok(out_path);
-    }
-
     let _ = app.emit("translate:progress", TranslateProgress { current: 0, total: 0, done: false });
 
     // Extract ASS header if needed

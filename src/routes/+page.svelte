@@ -182,6 +182,7 @@
 
   function handleContextMenu(e: MouseEvent) {
     e.preventDefault();
+    if ((e.target as HTMLElement).closest("[data-panel]")) return;
     ctxX = e.clientX;
     ctxY = e.clientY;
     ctxShow = true;

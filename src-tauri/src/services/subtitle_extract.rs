@@ -150,6 +150,10 @@ fn read_text_file(path: &str) -> Result<String, String> {
 }
 
 fn strip_tags(text: &str) -> String {
+    // Skip drawing commands (vector shapes rendered as numbers)
+    if text.contains("\\p1") || text.contains("\\p2") || text.contains("\\p3") {
+        return String::new();
+    }
     let mut out = String::with_capacity(text.len());
     let (mut in_ass, mut in_html) = (false, false);
     for c in text.chars() {
