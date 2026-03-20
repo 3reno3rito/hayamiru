@@ -29,21 +29,21 @@
 </script>
 
 {#if visible}
-  <button aria-label="Close" class="fixed inset-0 z-[80] w-full h-full bg-transparent border-none cursor-default" onclick={() => visible = false}></button>
+  <button aria-label="Close" class="fixed inset-0 z-80 w-full h-full bg-transparent border-none cursor-default" onclick={() => visible = false}></button>
 
-  <div data-panel class="fixed right-4 bottom-16 z-[81] w-[280px] max-h-[60vh] bg-[#18181c]/95 backdrop-blur-md border border-white/10 rounded-xl shadow-2xl text-[13px] text-white/90 flex flex-col select-none">
+  <div data-panel class="fixed right-4 bottom-16 z-81 w-70 max-h-[60vh] bg-[#18181c]/95 backdrop-blur-md border border-white/10 rounded-xl shadow-2xl text-[13px] text-white/90 flex flex-col select-none">
     <!-- Header -->
-    <div class="flex items-center border-b border-white/[0.08] px-3 py-2">
+    <div class="flex items-center border-b border-white/8 px-3 py-2">
       <span class="font-medium text-xs">{t().audio}</span>
       <div class="flex-1"></div>
       <button class="ctrl-btn w-6 h-6 text-xs" onclick={() => visible = false}>✕</button>
     </div>
 
     <!-- Track list -->
-    <div class="flex-1 overflow-y-auto max-h-[250px]">
+    <div class="flex-1 overflow-y-auto max-h-62.5">
       {#each tracks as track}
         <button
-          class="w-full flex items-center px-3 py-2 hover:bg-white/[0.08] text-left {track.selected ? 'text-blue-400' : 'text-white/70'}"
+          class="w-full flex items-center px-3 py-2 hover:bg-white/8 text-left {track.selected ? 'text-blue-400' : 'text-white/70'}"
           onclick={() => handleSelect(track.id)}
         >
           <span class="w-4 text-xs mr-2">{track.selected ? "✓" : "\u00A0"}</span>
@@ -62,7 +62,7 @@
     </div>
 
     <!-- Delay control -->
-    <div class="border-t border-white/[0.08] px-3 py-2">
+    <div class="border-t border-white/8 px-3 py-2">
       <div class="flex items-center justify-between">
         <span class="text-white/50">{t().delay}</span>
         <div class="flex items-center gap-1">

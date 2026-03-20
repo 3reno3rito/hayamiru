@@ -72,29 +72,29 @@
 </script>
 
 {#if visible}
-  <button aria-label="Close" class="fixed inset-0 z-[90] w-full h-full bg-black/40 border-none cursor-default" onclick={close}></button>
+  <button aria-label="Close" class="fixed inset-0 z-90 w-full h-full bg-black/40 border-none cursor-default" onclick={close}></button>
 
   <div
     data-panel
     role="dialog"
     tabindex="-1"
-    class="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-[91] w-[520px] h-[400px] bg-[#18181c]/95 backdrop-blur-md border border-white/10 rounded-xl shadow-2xl text-[13px] text-white/90 flex flex-col select-none overflow-hidden"
+    class="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-91 w-130 h-[400px] bg-[#18181c]/95 backdrop-blur-md border border-white/10 rounded-xl shadow-2xl text-[13px] text-white/90 flex flex-col select-none overflow-hidden"
     onclick={(e) => e.stopPropagation()}
     onkeydown={(e) => e.key === "Escape" && close()}
   >
     <!-- Header -->
-    <div class="flex items-center justify-between px-4 py-3 border-b border-white/[0.08]">
+    <div class="flex items-center justify-between px-4 py-3 border-b border-white/8">
       <span class="font-medium text-sm">{t().settings}</span>
       <button onclick={close} class="ctrl-btn w-7 h-7 text-xs">✕</button>
     </div>
 
     <div class="flex flex-1 min-h-0">
       <!-- Sidebar -->
-      <div class="w-[120px] border-r border-white/[0.08] py-2 flex-shrink-0">
+      <div class="w-30 border-r border-white/8 py-2 flex-shrink-0">
         {#each tabs as tb}
           <button
             onclick={() => tab = tb.id}
-            class="w-full text-left px-4 py-2 text-xs transition-colors {tab === tb.id ? 'bg-white/10 text-white font-medium' : 'text-white/50 hover:text-white/80 hover:bg-white/[0.05]'}"
+            class="w-full text-left px-4 py-2 text-xs transition-colors {tab === tb.id ? 'bg-white/10 text-white font-medium' : 'text-white/50 hover:text-white/80 hover:bg-white/5'}"
           >{tb.label}</button>
         {/each}
       </div>
@@ -231,8 +231,7 @@
             <label class="s-row"><span>{t().password}</span><input type="password" class="s-input" bind:value={settings.osPassword} onchange={() => settings.save()} placeholder={t().password} /></label>
           </div>
         {:else if tab === "shortcuts"}
-          <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-          <div class="space-y-3" onkeydown={rebinding ? handleRebind : undefined}>
+          <div class="space-y-3">
             {#each [...new Set(keybindings.actions.map(a => a.category))] as category}
               <div>
                 <span class="text-white/50 text-xs uppercase tracking-wide">{t()[category] ?? category}</span>
@@ -259,7 +258,7 @@
     </div>
 
     <!-- Footer -->
-    <div class="flex items-center px-4 py-2 border-t border-white/[0.08]">
+    <div class="flex items-center px-4 py-2 border-t border-white/8">
       <button class="text-[11px] text-white/30 hover:text-white/60" onclick={resetAll}>{t().restoreDefaults}</button>
       <div class="flex-1"></div>
       <span class="text-[11px] text-white/20">Hayamiru v0.1.0</span>

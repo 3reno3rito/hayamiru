@@ -140,7 +140,7 @@
 
 <!-- Speed dropdown -->
 {#if speedDropOpen}
-  <button aria-label="Close" class="fixed inset-0 z-[70] w-full h-full bg-transparent border-none cursor-default" onclick={() => speedDropOpen = false}></button>
+  <button aria-label="Close" class="fixed inset-0 z-70 w-full h-full bg-transparent border-none cursor-default" onclick={() => speedDropOpen = false}></button>
   <div
     data-panel
     class="fixed z-[71] w-[100px] bg-[#1a1a1f]/98 backdrop-blur-md border border-white/10 rounded-lg shadow-2xl py-1"

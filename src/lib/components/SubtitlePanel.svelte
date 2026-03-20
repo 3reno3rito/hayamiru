@@ -102,13 +102,13 @@
 
 {#if visible}
   <!-- svelte-ignore a11y_no_static_element_interactions -->
-  <button aria-label="Close" class="fixed inset-0 z-[80] w-full h-full bg-transparent border-none cursor-default" onclick={() => visible = false}></button>
+  <button aria-label="Close" class="fixed inset-0 z-80 w-full h-full bg-transparent border-none cursor-default" onclick={() => visible = false}></button>
 
-  <div data-panel class="fixed right-4 bottom-16 z-[81] w-[280px] max-h-[80vh] bg-[#18181c]/95 backdrop-blur-md border border-white/10 rounded-xl shadow-2xl text-[13px] text-white/90 flex flex-col select-none overflow-hidden">
+  <div data-panel class="fixed right-4 bottom-16 z-81 w-70 max-h-[80vh] bg-[#18181c]/95 backdrop-blur-md border border-white/10 rounded-xl shadow-2xl text-[13px] text-white/90 flex flex-col select-none overflow-hidden">
 
     {#if page === "main"}
       <!-- Header -->
-      <div class="flex items-center border-b border-white/[0.08] px-3 py-2">
+      <div class="flex items-center border-b border-white/8 px-3 py-2">
         <span class="font-medium text-xs">{t().subtitles}</span>
         <div class="flex-1"></div>
         <button class="ctrl-btn w-6 h-6 text-xs" onclick={() => visible = false}>✕</button>
@@ -119,7 +119,7 @@
       <div class="max-h-[180px] overflow-y-auto">
         {#each tracks as track}
           <button
-            class="w-full flex items-center px-3 py-2 hover:bg-white/[0.08] text-left {track.selected ? 'text-blue-400' : 'text-white/70'}"
+            class="w-full flex items-center px-3 py-2 hover:bg-white/8 text-left {track.selected ? 'text-blue-400' : 'text-white/70'}"
             onclick={() => handleSelect(track.id)}
           >
             <span class="w-4 text-xs mr-2">{track.selected ? "✓" : "\u00A0"}</span>
@@ -138,16 +138,16 @@
       </div>
 
       <!-- Load external + Search online -->
-      <div class="border-t border-white/[0.08]">
+      <div class="border-t border-white/8">
         <button
-          class="w-full flex items-center gap-2 px-3 py-2 hover:bg-white/[0.08] text-white/60 hover:text-white/90"
+          class="w-full flex items-center gap-2 px-3 py-2 hover:bg-white/8 text-white/60 hover:text-white/90"
           onclick={handleLoadExternal}
         >
           <svg class="w-3.5 h-3.5 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
           {t().loadExternalFile}
         </button>
         <button
-          class="w-full flex items-center gap-2 px-3 py-2 hover:bg-white/[0.08] text-white/60 hover:text-white/90"
+          class="w-full flex items-center gap-2 px-3 py-2 hover:bg-white/8 text-white/60 hover:text-white/90"
           onclick={() => { page = "search"; handleSearch(); }}
         >
           <svg class="w-3.5 h-3.5 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
@@ -156,7 +156,7 @@
       </div>
 
       <!-- Translate -->
-      <div class="border-t border-white/[0.08] px-3 py-2.5">
+      <div class="border-t border-white/8 px-3 py-2.5">
         {#if translating}
           <div class="space-y-1">
             <div class="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
@@ -179,7 +179,7 @@
       </div>
 
       <!-- Controls -->
-      <div class="border-t border-white/[0.08] px-3 py-2 space-y-2">
+      <div class="border-t border-white/8 px-3 py-2 space-y-2">
         <div class="flex items-center justify-between">
           <span class="text-white/50">{t().visibility}</span>
           <button
@@ -199,8 +199,8 @@
       </div>
 
       <!-- Style nav -->
-      <div class="border-t border-white/[0.08]">
-        <button class="w-full flex items-center justify-between px-3 py-2 hover:bg-white/[0.08] text-white/60 hover:text-white/90" onclick={() => page = "style"}>
+      <div class="border-t border-white/8">
+        <button class="w-full flex items-center justify-between px-3 py-2 hover:bg-white/8 text-white/60 hover:text-white/90" onclick={() => page = "style"}>
           <span>{t().style}</span>
           <svg class="w-3.5 h-3.5 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
         </button>
@@ -209,7 +209,7 @@
 
     {:else if page === "style"}
       <!-- Style header -->
-      <div class="flex items-center border-b border-white/[0.08] px-3 py-2">
+      <div class="flex items-center border-b border-white/8 px-3 py-2">
         <button class="ctrl-btn w-6 h-6 text-xs mr-2 hover:bg-white/10 rounded" onclick={() => page = "main"}>←</button>
         <span class="font-medium text-xs">{t().style}</span>
         <div class="flex-1"></div>
@@ -266,7 +266,7 @@
       </div>
     {:else if page === "search"}
       <!-- Search online results -->
-      <div class="flex items-center gap-2 border-b border-white/[0.08] px-3 py-2">
+      <div class="flex items-center gap-2 border-b border-white/8 px-3 py-2">
         <button class="ctrl-btn w-6 h-6 text-xs hover:bg-white/10 rounded" onclick={() => page = "main"}>←</button>
         <span class="font-medium text-xs">{t().searchOnlineTitle}</span>
       </div>
@@ -283,7 +283,7 @@
           {/if}
           {#each searchResults.slice(0, 20) as sub}
             <button
-              class="w-full text-left px-3 py-2 hover:bg-white/[0.08] border-b border-white/[0.04] disabled:opacity-30"
+              class="w-full text-left px-3 py-2 hover:bg-white/8 border-b border-white/4 disabled:opacity-30"
               disabled={downloading}
               onclick={() => handleDownload(sub.file_id, sub.name)}
             >

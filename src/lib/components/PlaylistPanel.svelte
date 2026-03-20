@@ -84,11 +84,11 @@
 </script>
 
 {#if visible}
-  <button aria-label="Close" class="fixed inset-0 z-[80] w-full h-full bg-transparent border-none cursor-default" onclick={() => visible = false}></button>
+  <button aria-label="Close" class="fixed inset-0 z-80 w-full h-full bg-transparent border-none cursor-default" onclick={() => visible = false}></button>
 
-  <div data-panel class="fixed right-4 bottom-16 z-[81] w-[320px] max-h-[80vh] bg-[#18181c]/95 backdrop-blur-md border border-white/10 rounded-xl shadow-2xl text-[13px] text-white/90 flex flex-col select-none">
+  <div data-panel class="fixed right-4 bottom-16 z-81 w-80 max-h-[80vh] bg-[#18181c]/95 backdrop-blur-md border border-white/10 rounded-xl shadow-2xl text-[13px] text-white/90 flex flex-col select-none">
     <!-- Header -->
-    <div class="flex items-center border-b border-white/[0.08] px-3 py-2">
+    <div class="flex items-center border-b border-white/8 px-3 py-2">
       <span class="font-medium text-xs">{t().playlist}</span>
       <span class="text-white/30 text-[11px] ml-2">{items.length} items</span>
       <div class="flex-1"></div>
@@ -99,7 +99,7 @@
     <div class="flex-1 overflow-y-auto max-h-[400px]">
       {#each items as item, i}
         <div
-          class="group w-full flex items-center px-3 py-2 hover:bg-white/[0.08] cursor-default {item.current ? 'bg-white/[0.05]' : ''}"
+          class="group w-full flex items-center px-3 py-2 hover:bg-white/8 cursor-default {item.current ? 'bg-white/5' : ''}"
           role="option"
           aria-selected={item.current}
           tabindex="-1"
@@ -128,7 +128,7 @@
     </div>
 
     <!-- Controls -->
-    <div class="border-t border-white/[0.08] flex items-center px-2 py-1.5 gap-1">
+    <div class="border-t border-white/8 flex items-center px-2 py-1.5 gap-1">
       <button
         class="flex items-center justify-center w-7 h-7 rounded border-none transition-all"
         style="background: {shuffle ? 'rgba(59,130,246,0.2)' : 'transparent'}; color: {shuffle ? 'rgb(96,165,250)' : 'rgba(255,255,255,0.5)'};"
