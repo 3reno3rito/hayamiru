@@ -49,8 +49,8 @@
 </script>
 
 {#if visible}
-  <div class="fixed bottom-0 left-0 right-0 z-50 controls-overlay bg-gradient-to-t from-black/80 to-transparent pt-8 pb-2 px-4">
-    <div class="mb-2"><SeekBar /></div>
+  <div class="fixed bottom-0 left-0 right-0 z-50 controls-overlay bg-gradient-to-t from-black/80 to-transparent pt-6 pb-2 px-4">
+    <div class="mb-1"><SeekBar /></div>
 
     <div class="flex items-center gap-1">
       <button onclick={() => { if (player.duration > 0) player.playing = !player.playing; togglePause(); }} class="ctrl-btn w-9 h-9" title={player.playing ? `${t().pause} (Space)` : `${t().play} (Space)`}>
@@ -72,8 +72,8 @@
 
       <!-- Next -->
       <button onclick={() => playlistNext().catch(() => {})} class="ctrl-btn w-8 h-8" title="{t().next} (N)">
-        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M16 6h2v12h-2zm-10 6l8.5 6V6z" transform="scale(-1,1) translate(-24,0)" />
+        <svg class="w-4 h-4 scale-x-[-1]" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M6 6h2v12H6zm3.5 6l8.5 6V6z" />
         </svg>
       </button>
 

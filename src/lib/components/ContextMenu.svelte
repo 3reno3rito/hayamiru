@@ -1,6 +1,7 @@
 <script lang="ts">
   import { player } from "$lib/stores/player.svelte";
   import { t } from "$lib/i18n/index.svelte";
+  import { langName } from "$lib/utils/lang-names";
   import {
     togglePause, stop, screenshot,
     toggleAbLoop, getChapters, seekChapter,
@@ -159,7 +160,7 @@
       </button>
       {#each subTracks as t}
         <button class="ctx-item" onclick={() => { selectSubtitle(t.id); onclose(); }}>
-          {t.selected ? "✓ " : "\u00A0 "}{t.title || t.lang || `Track ${t.id}`}
+          {t.selected ? "✓ " : "\u00A0 "}{t.title || langName(t.lang) || `Track ${t.id}`}
         </button>
       {/each}
 
@@ -168,7 +169,7 @@
       <div class="ctx-sep"></div>
       {#each audioTracks as t}
         <button class="ctx-item" onclick={() => { selectAudioTrack(t.id); onclose(); }}>
-          {t.selected ? "✓ " : "\u00A0 "}{t.title || t.lang || `Track ${t.id}`}
+          {t.selected ? "✓ " : "\u00A0 "}{t.title || langName(t.lang) || `Track ${t.id}`}
         </button>
       {/each}
 

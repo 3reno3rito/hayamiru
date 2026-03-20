@@ -1,6 +1,7 @@
 <script lang="ts">
   import { getTracks, selectAudioTrack, setAudioDelay, type TrackInfo } from "$lib/bindings/tracks";
   import { t } from "$lib/i18n/index.svelte";
+  import { langName } from "$lib/utils/lang-names";
 
   let { visible = $bindable(false) }: { visible: boolean } = $props();
 
@@ -47,9 +48,9 @@
         >
           <span class="w-4 text-xs mr-2">{track.selected ? "✓" : "\u00A0"}</span>
           <span class="flex-1 truncate">
-            {track.title || track.lang || `Track ${track.id}`}
+            {track.title || langName(track.lang) || `Track ${track.id}`}
             {#if track.lang && track.title}
-              <span class="text-white/30 ml-1">[{track.lang}]</span>
+              <span class="text-white/30 ml-1">[{langName(track.lang)}]</span>
             {/if}
           </span>
         </button>
