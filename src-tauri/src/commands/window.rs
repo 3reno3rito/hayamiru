@@ -8,6 +8,10 @@ pub async fn toggle_fullscreen(app: tauri::AppHandle) -> Result<(), AppError> {
         let is_fs = window
             .is_fullscreen()
             .map_err(|e| AppError::Config(e.to_string()))?;
+        if !is_fs && window.is_maximized().unwrap_or(false) {
+            let _ = window.unmaximize();
+            tokio::time::sleep(std::time::Duration::from_millis(50)).await;
+        }
         window
             .set_fullscreen(!is_fs)
             .map_err(|e| AppError::Config(e.to_string()))?;
