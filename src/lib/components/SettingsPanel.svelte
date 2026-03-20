@@ -2,7 +2,7 @@
   import { setBrightness, setContrast, setSaturation, setVideoZoom, resetVideoZoomPan, toggleDeinterlace } from "$lib/bindings/video";
   import { setAudioNormalization, setAudioEqualizer, resetAudioEqualizer } from "$lib/bindings/audio-fx";
   import { settings, subFonts } from "$lib/stores/settings.svelte";
-  import { keybindings } from "$lib/stores/keybindings.svelte";
+  import { keybindings, KeybindingsStore } from "$lib/stores/keybindings.svelte";
   import { t, setLocale } from "$lib/i18n/index.svelte";
   import Select from "./Select.svelte";
 
@@ -78,7 +78,7 @@
     data-panel
     role="dialog"
     tabindex="-1"
-    class="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-91 w-130 h-[400px] bg-[#18181c]/95 backdrop-blur-md border border-white/10 rounded-xl shadow-2xl text-[13px] text-white/90 flex flex-col select-none overflow-hidden"
+    class="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-91 w-130 h-100 bg-[#18181c]/95 backdrop-blur-md border border-white/10 rounded-xl shadow-2xl text-[13px] text-white/90 flex flex-col select-none overflow-hidden"
     onclick={(e) => e.stopPropagation()}
     onkeydown={(e) => e.key === "Escape" && close()}
   >
@@ -90,7 +90,7 @@
 
     <div class="flex flex-1 min-h-0">
       <!-- Sidebar -->
-      <div class="w-30 border-r border-white/8 py-2 flex-shrink-0">
+      <div class="w-30 border-r border-white/8 py-2 shrink-0">
         {#each tabs as tb}
           <button
             onclick={() => tab = tb.id}
@@ -170,7 +170,7 @@
             </div>
             <div class="flex gap-1 flex-wrap mb-2">
               {#each Object.keys(eqPresets) as name}
-                <button class="px-2.5 py-1 rounded text-xs bg-white/[0.08] hover:bg-white/[0.15] text-white/70" onclick={() => setPreset(name)}>{name}</button>
+                <button class="px-2.5 py-1 rounded text-xs bg-white/8 hover:bg-white/15 text-white/70" onclick={() => setPreset(name)}>{name}</button>
               {/each}
             </div>
             {#each eqLabels as label, i}
@@ -234,16 +234,16 @@
           <div class="space-y-3">
             {#each [...new Set(keybindings.actions.map(a => a.category))] as category}
               <div>
-                <span class="text-white/50 text-xs uppercase tracking-wide">{t()[category] ?? category}</span>
+                <span class="text-white/50 text-xs uppercase tracking-wide">{(t() as Record<string, string>)[category] ?? category}</span>
                 {#each keybindings.actions.filter(a => a.category === category) as action}
                   <div class="s-row">
-                    <span class="flex-1">{t()[action.i18nKey] ?? action.i18nKey}</span>
+                    <span class="flex-1">{(t() as Record<string, string>)[action.i18nKey] ?? action.i18nKey}</span>
                     <button
-                      class="min-w-[100px] px-3 py-1 text-xs rounded border transition-all text-center {rebinding === action.id ? 'border-blue-400 bg-blue-500/20 text-blue-400' : 'border-white/10 bg-white/5 text-white/80 hover:bg-white/10'}"
+                      class="min-w-25 px-3 py-1 text-xs rounded border transition-all text-center {rebinding === action.id ? 'border-blue-400 bg-blue-500/20 text-blue-400' : 'border-white/10 bg-white/5 text-white/80 hover:bg-white/10'}"
                       onclick={() => rebinding = action.id}
                       onkeydown={rebinding === action.id ? handleRebind : undefined}
                     >
-                      {rebinding === action.id ? t().pressKey : keybindings.constructor.keyLabel(keybindings.getKey(action.id))}
+                      {rebinding === action.id ? t().pressKey : KeybindingsStore.keyLabel(keybindings.getKey(action.id))}
                     </button>
                   </div>
                 {/each}

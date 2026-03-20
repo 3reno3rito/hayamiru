@@ -63,7 +63,7 @@ const DEFAULTS: Record<string, string> = {
   mediaInfo: "i",
 };
 
-class KeybindingsStore {
+export class KeybindingsStore {
   custom = $state<Record<string, string>>({});
   #keyToAction = $derived.by(() => {
     const map = new Map<string, string>();
