@@ -213,7 +213,7 @@
   onmousemove={handleMouseMove}
   ondblclick={handleDoubleClick}
   oncontextmenu={handleContextMenu}
-  onwheel={(e) => { e.preventDefault(); player.volume = Math.min(100, Math.max(0, player.volume + (e.deltaY < 0 ? 5 : -5))); setVolume(player.volume); }}
+  onwheel={(e) => { if ((e.target as HTMLElement).closest("[data-panel]")) return; e.preventDefault(); player.volume = Math.min(100, Math.max(0, player.volume + (e.deltaY < 0 ? 5 : -5))); setVolume(player.volume); }}
 >
   {#if dragOver}
     <div class="absolute inset-0 z-[90] flex items-center justify-center bg-black/60 border-2 border-dashed border-white/30 pointer-events-none">
