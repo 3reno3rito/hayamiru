@@ -32,10 +32,23 @@
     if (name === "settings") settingsOpen = true;
   }
 
+  let cursorVisible = $state(true);
+  let cursorTimer: ReturnType<typeof setTimeout> | null = null;
+
   function handleMouseMove(e: MouseEvent) {
     if (!player.fullscreen) { player.controlsVisible = true; return; }
     if (document.querySelector("[data-panel]")) { player.controlsVisible = true; return; }
     player.controlsVisible = e.clientY <= 50 || e.clientY >= window.innerHeight - 80;
+    cursorVisible = true;
+    if (cursorTimer) clearTimeout(cursorTimer);
+    if (player.playing) cursorTimer = setTimeout(() => { cursorVisible = false; }, 300);
+  }
+
+  function handleMouseLeave() {
+    if (!player.fullscreen && player.playing && !document.querySelector("[data-panel]")) player.controlsVisible = false;
+  }
+  function handleMouseEnter() {
+    if (!player.fullscreen) player.controlsVisible = true;
   }
 
   $effect(() => {
@@ -214,8 +227,10 @@
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <div
   class="w-screen h-screen relative overflow-hidden"
-  style="background: {player.duration > 0 ? 'transparent' : 'black'}; cursor: {!player.fullscreen || player.controlsVisible ? 'default' : 'none'};"
+  style="background: {player.duration > 0 ? 'transparent' : 'black'}; cursor: {!player.fullscreen || cursorVisible ? 'default' : 'none'};"
   onmousemove={handleMouseMove}
+  onmouseleave={handleMouseLeave}
+  onmouseenter={handleMouseEnter}
   ondblclick={handleDoubleClick}
   oncontextmenu={handleContextMenu}
   onwheel={(e) => { if ((e.target as HTMLElement).closest("[data-panel]")) return; e.preventDefault(); player.volume = Math.min(100, Math.max(0, player.volume + (e.deltaY < 0 ? 5 : -5))); setVolume(player.volume); }}
