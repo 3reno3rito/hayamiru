@@ -41,7 +41,7 @@
     player.controlsVisible = e.clientY <= 50 || e.clientY >= window.innerHeight - 80;
     cursorVisible = true;
     if (cursorTimer) clearTimeout(cursorTimer);
-    if (player.playing) cursorTimer = setTimeout(() => { cursorVisible = false; }, 300);
+    if (player.playing) cursorTimer = setTimeout(() => { cursorVisible = false; }, 500);
   }
 
   function handleMouseLeave() {
